@@ -37,6 +37,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "./theme-provider";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -140,142 +141,145 @@ export function AppSidebar() {
   );
 
   return (
-    <SidebarProvider>
-      <Sidebar className="border-r border-[#f0f0f5] bg-[#fafafa]/70 backdrop-blur-xl">
-        <SidebarHeader className="border-b border-[#f0f0f5] px-2 py-4">
-          <Link href="/dashboard" className="flex items-center gap-2 px-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80">
-              <CheckSquare className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex-1 text-lg font-semibold"
-            >
-              TaskAI
-            </motion.div>
-          </Link>
-        </SidebarHeader>
-        <SidebarContent className="px-2 py-4">
-          <SidebarGroup>
-            <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground/70">
-              MAIN MENU
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {mainNavItems.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.href}
-                      className="group/button relative px-4"
-                    >
-                      <Link href={item.href}>
-                        <IconWrapper color={item.color}>
-                          <item.icon className="h-5 w-5 text-white" />
-                        </IconWrapper>
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                    {item.badge && (
-                      <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>
-                    )}
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          <SidebarSeparator className="my-4" />
-
-          <SidebarGroup>
-            <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground/70">
-              WORKSPACE
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {workspaceItems.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.href}
-                      className="group/button relative px-4"
-                    >
-                      <Link href={item.href}>
-                        <IconWrapper color={item.color}>
-                          <item.icon className="h-5 w-5 text-white" />
-                        </IconWrapper>
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                    {item.badge && (
-                      <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>
-                    )}
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          <SidebarSeparator className="my-4" />
-
-          <SidebarGroup>
-            <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground/70">
-              AI FEATURES
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {aiFeatures.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.href}
-                      className="group/button relative px-4"
-                    >
-                      <Link href={item.href}>
-                        <IconWrapper color={item.color}>
-                          <item.icon className="h-5 w-5 text-white" />
-                        </IconWrapper>
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                    {item.badge && (
-                      <SidebarMenuBadge
-                        className={cn(
-                          item.badge === "New" &&
-                            "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
-                        )}
-                      >
-                        {item.badge}
-                      </SidebarMenuBadge>
-                    )}
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter className="border-t border-[#f0f0f5] p-4">
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                variant="outline"
-                className="group/button relative px-4"
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <SidebarProvider>
+        <Sidebar className="border-r border-[#f0f0f5] bg-[#fafafa]/70 backdrop-blur-xl">
+          <SidebarHeader className="border-b border-[#f0f0f5] px-2 py-4">
+            <Link href="/dashboard" className="flex items-center gap-2 px-4">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80">
+                <CheckSquare className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex-1 text-lg font-semibold"
               >
-                <Link href="/settings">
-                  <IconWrapper color="from-gray-600 to-gray-700">
-                    <Settings className="h-5 w-5 text-white" />
-                  </IconWrapper>
-                  <span>Settings</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
-        <SidebarRail />
-      </Sidebar>
-    </SidebarProvider>
+                TaskAI
+              </motion.div>
+            </Link>
+          </SidebarHeader>
+          <SidebarContent className="px-2 py-4">
+            <SidebarGroup>
+              <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground/70">
+                MAIN MENU
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {mainNavItems.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.href}
+                        className="group/button relative px-4"
+                      >
+                        <Link href={item.href}>
+                          <IconWrapper color={item.color}>
+                            <item.icon className="h-5 w-5 text-white" />
+                          </IconWrapper>
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                      {item.badge && (
+                        <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>
+                      )}
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+            <SidebarSeparator className="my-4" />
+            <SidebarGroup>
+              <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground/70">
+                WORKSPACE
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {workspaceItems.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.href}
+                        className="group/button relative px-4"
+                      >
+                        <Link href={item.href}>
+                          <IconWrapper color={item.color}>
+                            <item.icon className="h-5 w-5 text-white" />
+                          </IconWrapper>
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                      {item.badge && (
+                        <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>
+                      )}
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+            <SidebarSeparator className="my-4" />
+            <SidebarGroup>
+              <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground/70">
+                AI FEATURES
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {aiFeatures.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.href}
+                        className="group/button relative px-4"
+                      >
+                        <Link href={item.href}>
+                          <IconWrapper color={item.color}>
+                            <item.icon className="h-5 w-5 text-white" />
+                          </IconWrapper>
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                      {item.badge && (
+                        <SidebarMenuBadge
+                          className={cn(
+                            item.badge === "New" &&
+                              "bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+                          )}
+                        >
+                          {item.badge}
+                        </SidebarMenuBadge>
+                      )}
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarFooter className="border-t border-[#f0f0f5] p-4">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  variant="outline"
+                  className="group/button relative px-4"
+                >
+                  <Link href="/settings">
+                    <IconWrapper color="from-gray-600 to-gray-700">
+                      <Settings className="h-5 w-5 text-white" />
+                    </IconWrapper>
+                    <span>Settings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
+          <SidebarRail />
+        </Sidebar>
+      </SidebarProvider>
+    </ThemeProvider>
   );
 }

@@ -1,12 +1,20 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Bell, CheckSquare, Menu, Plus, Search, Settings, User } from "lucide-react"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Bell,
+  CheckSquare,
+  Menu,
+  Plus,
+  Search,
+  Settings,
+  User,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { ModeToggle } from "@/components/mode-toggle"
+import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/mode-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,28 +22,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function DashboardHeader() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const pathname = usePathname()
+  const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
+      setIsScrolled(window.scrollY > 10);
+    };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <header
       className={`sticky top-0 z-50 w-full ${
-        isScrolled ? "bg-background/80 backdrop-blur-md border-b" : "bg-background border-b"
+        isScrolled
+          ? "bg-background/80 backdrop-blur-md border-b"
+          : "bg-background border-b"
       } transition-all duration-200`}
     >
       <div className="container flex h-16 items-center px-4 md:px-6">
@@ -60,16 +70,13 @@ export function DashboardHeader() {
           </Sheet>
         </div>
 
-        <Link href="/dashboard" className="flex items-center gap-2 mr-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
-            <CheckSquare className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="text-lg font-semibold">TaskAI</span>
-        </Link>
-
         <div className="relative hidden md:flex items-center w-full max-w-sm">
           <Search className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
-          <Input type="search" placeholder="Search tasks..." className="pl-8 w-full" />
+          <Input
+            type="search"
+            placeholder="Search tasks..."
+            className="pl-8 w-full"
+          />
         </div>
 
         <div className="ml-auto flex items-center gap-2">
@@ -113,6 +120,5 @@ export function DashboardHeader() {
         </div>
       </div>
     </header>
-  )
+  );
 }
-

@@ -16,12 +16,15 @@ export default function RootLayout({
       enableSystem
       disableTransitionOnChange
     >
-      <DashboardHeader />
-      <div className="flex gap-10 py-6 px-4 ">
+      <div className="flex gap-4 py-6 px-4 ">
         <div className="">
           <AppSidebar />
         </div>
-        <main className="flex-1">{children}</main>
+
+        <main className="flex-1">
+          <DashboardHeader />
+          {children}
+        </main>
       </div>
     </ThemeProvider>
   );
