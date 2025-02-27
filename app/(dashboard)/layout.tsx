@@ -1,7 +1,8 @@
 import type React from "react";
-import "./globals.css";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { AppSidebar } from "@/components/app-sidebar";
+import { ThemeProvider } from "next-themes";
+// import { ThemeProvider } from "@/components/theme-provider";
 
 export default function RootLayout({
   children,
@@ -9,12 +10,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#fcfcfd]">
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
       <DashboardHeader />
-      <div className="flex flex-1">
-        <AppSidebar />
-        <main className="flex-1 overflow-auto px-6 py-4">{children}</main>
+      <div className="flex gap-10 py-6 px-4 ">
+        <div className="">
+          <AppSidebar />
+        </div>
+        <main className="flex-1">{children}</main>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
