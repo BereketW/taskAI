@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth-client";
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +28,26 @@ export default function SignInPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
+    const { data, error } = await authClient.signIn.email(
+      {
+        email,
+        password,
+        callbackURL: "/dashboard",
+      },
+      {
+        onSuccess: (response) => {
+          setIsLoading(false);
+          window.location.href = "/dashboard";
+        },
+        onError: (response) => {
+          setIsLoading(false);
+          alert(response.error.message);
+        },
+        onRequest: (response) => {
+          setIsLoading(true);
+        },
+      }
+    );
     // Simulate API call
     // setTimeout(() => {
     //   setIsLoading(false)
