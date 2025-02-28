@@ -1,14 +1,287 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+/**
+ * ==========================
+ */
+/**
+ * 🔹 USER AUTHENTICATION
+ */
+/**
+ * ==========================
+ */
+
+model User {
+  id            String    @id
+  name          String    @db.Text
+  email         String    @unique
+  emailVerified Boolean
+  image         String?   @db.Text
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+
+  workspaces    Workspace[] // Owned workspaces
+  memberships   WorkspaceMember[] // Workspaces user is part of
+  taskLists     TaskList[] // Lists created by user
+  tasks         Task[] // Tasks assigned to user
+  comments      TaskComment[]
+  activityLogs  TaskActivityLog[]
+  reminders     Reminder[]
+  attachments   TaskAttachment[]
+  notifications Notification[]
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?  @db.Text
+  userAgent String?  @db.Text
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id
+  accountId             String    @db.Text
+  providerId            String    @db.Text
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?   @db.Text
+  password              String?   @db.Text
+  createdAt             DateTime
+  updatedAt             DateTime
+}
+
+/**
+ * ==========================
+ */
+/**
+ * 🔹 WORKSPACE & ORGANIZATION
+ */
+/**
+ * ==========================
+ */
+
+model Workspace {
+  id           String            @id @default(uuid())
+  name         String
+  ownerId      String
+  owner        User              @relation(fields: [ownerId], references: [id])
+  visibility   Visibility
+  members      WorkspaceMember[]
+  taskLists    TaskList[]
+  integrations Integration[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model WorkspaceMember {
+  id          String    @id @default(uuid())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  role        Role
+  joinedAt    DateTime  @default(now())
+}
+
+/**
+ * ==========================
+ */
+/**
+ * 🔹 TASK MANAGEMENT
+ */
+/**
+ * ==========================
+ */
+
+model TaskList {
+  id          String    @id @default(uuid())
+  name        String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdById String
+  tasks       Task[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Task {
+  id           String            @id @default(uuid())
+  title        String
+  description  String?
+  list         TaskList          @relation(fields: [listId], references: [id])
+  listId       String
+  assignedTo   User?             @relation(fields: [assignedToId], references: [id])
+  assignedToId String?
+  dueDate      DateTime?
+  priority     Priority
+  status       TaskStatus
+  comments     TaskComment[]
+  activityLogs TaskActivityLog[]
+  reminders    Reminder[]
+  attachments  TaskAttachment[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+/**
+ * ==========================
+ */
+/**
+ * 🔹 COLLABORATION
+ */
+/**
+ * ==========================
+ */
+
+model TaskComment {
+  id        String   @id @default(uuid())
+  task      Task     @relation(fields: [taskId], references: [id])
+  taskId    String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  comment   String
+  createdAt DateTime @default(now())
+}
+
+model TaskActivityLog {
+  id        String         @id @default(uuid())
+  task      Task           @relation(fields: [taskId], references: [id])
+  taskId    String
+  user      User           @relation(fields: [userId], references: [id])
+  userId    String
+  action    ActivityAction
+  timestamp DateTime       @default(now())
+}
+
+model Reminder {
+  id           String         @id @default(uuid())
+  task         Task           @relation(fields: [taskId], references: [id])
+  taskId       String
+  user         User           @relation(fields: [userId], references: [id])
+  userId       String
+  reminderTime DateTime
+  status       ReminderStatus
+  createdAt    DateTime       @default(now())
+}
+
+model TaskAttachment {
+  id           String   @id @default(uuid())
+  task         Task     @relation(fields: [taskId], references: [id])
+  taskId       String
+  fileUrl      String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+  createdAt    DateTime @default(now())
+}
+
+/**
+ * ==========================
+ */
+/**
+ * 🔹 INTEGRATIONS & NOTIFICATIONS
+ */
+/**
+ * ==========================
+ */
+
+model Integration {
+  id              String          @id @default(uuid())
+  workspace       Workspace       @relation(fields: [workspaceId], references: [id])
+  workspaceId     String
+  integrationType IntegrationType
+  config          Json
+  createdAt       DateTime        @default(now())
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  user      User             @relation(fields: [userId], references: [id])
+  userId    String
+  message   String
+  type      NotificationType
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+}
+
+/**
+ * ==========================
+ */
+/**
+ * 🔹 ENUMS
+ */
+/**
+ * ==========================
+ */
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum Visibility {
+  PRIVATE
+  PUBLIC
+  TEAM
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum ActivityAction {
+  CREATED
+  UPDATED
+  COMPLETED
+  DELETED
+  ASSIGNED
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  CANCELED
+}
+
+enum IntegrationType {
+  SLACK
+  GITHUB
+  GOOGLE_CALENDAR
+  NOTION
+}
+
+enum NotificationType {
+  TASK_DUE
+  MENTION
+  REMINDER
+  SYSTEM
 }
