@@ -40,10 +40,10 @@ export async function POST(req: Request) {
     );
   }
 }
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const session = await auth.api.getSession({
-      headers: req.headers,
+      headers: await headers(),
     });
     if (!session)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -56,11 +56,7 @@ export async function GET(req: Request) {
             user: true, // Include user details for each member
           },
         },
-        taskLists: {
-          include: {
-            tasks: true,
-          },
-        }, // Include all task lists in the workspace
+        taskLists: true, // Include all task lists in the workspace
       },
     });
 

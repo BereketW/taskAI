@@ -8,36 +8,38 @@ import { headers } from "next/headers";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!); // Ensure you have the API key
 
 export async function POST(req: Request) {
+  const {
+    title,
+    description,
+    category,
+    priority,
+    selectedTasklist,
+    dueDate,
+    dueTime,
+    recurring,
+  } = await req.json();
   try {
     // const session = await getServerSession();
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: req.headers,
     });
     if (!session)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const {
-      title,
-      description,
-      category,
-      priority,
-      dueDate,
-      dueTime,
-      recurring,
-    } = await req.json();
     const userId = session.user.id;
 
     // Store task in the database
     const newTask = await prisma.task.create({
       data: {
-        userId,
+        assignedToId: userId,
+        listId: selectedTasklist,
         title,
         description,
         category,
-        priority,
+        priority: priority.toUpperCase(),
         dueDate,
         dueTime,
-        recurring,
+        // recurring,
         status: "PENDING",
       },
     });

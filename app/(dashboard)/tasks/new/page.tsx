@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Clock, Loader2, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -29,40 +29,102 @@ import { Switch } from "@/components/ui/switch";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-
+import { createTask } from "@/actions/workspaces";
+import { ToastContainer, toast } from "react-toastify";
 export default function NewTaskPage() {
   const router = useRouter();
-  const { toast } = useToast();
-  const [date, setDate] = useState<Date>();
+  // const { toast } = useToast();
+  const [dueDate, setDate] = useState<Date>();
+  const [dueTime, setDueTime] = useState("");
   const [showAiSuggestions, setShowAiSuggestions] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedWorkspace, setSelectedWorkspace] = useState("");
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+  const [category, setCategory] = useState("");
+  const [recurring, setRecuring] = useState(false);
+  const [priority, setPriority] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [workspaces, setWorkspace] = useState([]);
   const [selectedTasklist, setSelectedTasklist] = useState("");
 
-  // Mock data for workspaces and tasklists
-  const workspaces = [
-    {
-      id: "1",
-      name: "Product Development",
-      tasklists: [
-        { id: "1", name: "Sprint Backlog" },
-        { id: "2", name: "In Progress" },
-        { id: "3", name: "Code Review" },
-      ],
-    },
-    {
-      id: "2",
-      name: "Marketing Projects",
-      tasklists: [
-        { id: "4", name: "Campaign Planning" },
-        { id: "5", name: "Content Creation" },
-      ],
-    },
-  ];
+  useEffect(() => {
+    async function getWorkspace() {
+      setIsLoading(false);
+      try {
+        const response = await fetch("/api/workspace", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-  const handleSubmit = (e: React.FormEvent) => {
+        const data = await response.json();
+        console.log(data.workspaces.members);
+        setWorkspace(data.workspaces);
+      } catch (err) {
+        console.log(err);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    getWorkspace();
+  }, []);
+
+  // Mock data for workspaces and tasklists
+  // const workspaces = [
+  //   {
+  //     id: "1",
+  //     name: "Product Development",
+  //     tasklists: [
+  //       { id: "1", name: "Sprint Backlog" },
+  //       { id: "2", name: "In Progress" },
+  //       { id: "3", name: "Code Review" },
+  //     ],
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Marketing Projects",
+  //     tasklists: [
+  //       { id: "4", name: "Campaign Planning" },
+  //       { id: "5", name: "Content Creation" },
+  //     ],
+  //   },
+  // ];
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    try {
+      const data = {
+        title,
+        description,
+        category,
+        recurring,
+        dueDate,
+        dueTime,
+        priority,
+        selectedWorkspace,
+        selectedTasklist,
+      };
+      const task = await createTask(data);
+      console.log("task", task);
+      if (task.success) {
+        // toast({
+        //   title: "Task Created",
+        //   description: "Your new task has been created successfully.",
+        // });
+        toast("Your task has been created successfully");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      toast({
+        title: "Task Created",
+        description: "Your new task has been created successfully.",
+      });
+    }
 
     if (!selectedWorkspace || !selectedTasklist) {
       toast({
@@ -75,22 +137,16 @@ export default function NewTaskPage() {
     }
 
     // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: "Task Created",
-        description: "Your new task has been created successfully.",
-      });
-      router.push("/tasks");
-    }, 1500);
   };
 
   const selectedWorkspaceData = workspaces.find(
     (w) => w.id === selectedWorkspace
   );
-
+  // console.log(selectedWorkspaceData);
+  // console.log(selectedWorkspace);
   return (
     <div className="flex flex-col gap-6 p-6">
+      <ToastContainer />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Create New Task</h1>
@@ -115,7 +171,7 @@ export default function NewTaskPage() {
                   <Label>Workspace</Label>
                   <Select
                     value={selectedWorkspace}
-                    onValueChange={setSelectedWorkspace}
+                    onValueChange={(value) => setSelectedWorkspace(value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select workspace" />
@@ -141,7 +197,7 @@ export default function NewTaskPage() {
                       <SelectValue placeholder="Select tasklist" />
                     </SelectTrigger>
                     <SelectContent>
-                      {selectedWorkspaceData?.tasklists.map((tasklist) => (
+                      {selectedWorkspaceData?.taskLists.map((tasklist) => (
                         <SelectItem key={tasklist.id} value={tasklist.id}>
                           {tasklist.name}
                         </SelectItem>
@@ -152,18 +208,23 @@ export default function NewTaskPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="title">Task Title</Label>
-                  <Input id="title" placeholder="Enter task title" />
+                  <Input
+                    onChange={(e) => setTitle(e.target.value)}
+                    id="title"
+                    placeholder="Enter task title"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="description">Description</Label>
                   <Textarea
+                    onChange={(e) => setDescription(e.target.value)}
                     id="description"
                     placeholder="Enter task description"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
-                  <Select>
+                  <Select onValueChange={(value) => setCategory(value)}>
                     <SelectTrigger id="category">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
@@ -179,7 +240,11 @@ export default function NewTaskPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>Priority</Label>
-                  <RadioGroup defaultValue="medium" className="flex space-x-2">
+                  <RadioGroup
+                    onValueChange={(value) => setPriority(value)}
+                    defaultValue="medium"
+                    className="flex space-x-2"
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="low" id="low" />
                       <Label htmlFor="low" className="text-green-500">
@@ -203,20 +268,30 @@ export default function NewTaskPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Due Date</Label>
-                    <Input type="date" />
+                    <Input
+                      onChange={(e) => setDate(new Date(e.target.value))}
+                      type="date"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="time">Due Time</Label>
                     <div className="flex items-center">
                       <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
-                      <Input id="time" type="time" />
+                      <Input
+                        onChange={(e) => setDueTime(e.target.value)}
+                        id="time"
+                        type="time"
+                      />
                     </div>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="recurring">Recurring Task</Label>
-                    <Switch id="recurring" />
+                    <Switch
+                      onChange={() => setRecuring(!recurring)}
+                      id="recurring"
+                    />
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Set this task to repeat on a schedule

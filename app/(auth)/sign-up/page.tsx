@@ -20,6 +20,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { authClient } from "@/lib/auth-client";
+import {
+  createDefaultTaskList,
+  createDefaultWorkspace,
+} from "@/lib/defaultworkspace";
 
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,27 +35,37 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const { data, error } = await authClient.signUp.email(
-      {
-        name,
-        email,
-        password,
-        callbackURL: "/onboarding",
-      },
-      {
-        onRequest: (ctx) => {
-          setIsLoading(true);
+    try {
+      const { data, error } = await authClient.signUp.email(
+        {
+          name,
+          email,
+          password,
+          callbackURL: "/onboarding",
         },
-        onSuccess: (ctx) => {
-          setIsLoading(false);
-          window.location.href = "/onboarding";
-        },
-        onError: (ctx) => {
-          setIsLoading(false);
-          alert(ctx.error.message);
-        },
-      }
-    );
+        {
+          onRequest: (ctx) => {
+            setIsLoading(true);
+          },
+          onSuccess: (data) => {
+            setIsLoading(false);
+
+            window.location.href = "/onboarding";
+          },
+          onError: (ctx) => {
+            setIsLoading(false);
+            alert(ctx.error.message);
+          },
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      const { data: session } = authClient.useSession();
+      // createDefaultTaskList(session?.user.id);
+      // createDefaultWorkspace(session?.user.id);
+    }
 
     // Simulate API call
   };

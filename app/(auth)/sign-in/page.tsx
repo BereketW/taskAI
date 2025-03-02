@@ -35,8 +35,11 @@ export default function SignInPage() {
         callbackURL: "/dashboard",
       },
       {
-        onSuccess: (response) => {
+        onSuccess: (ctx) => {
           setIsLoading(false);
+          const authToken = ctx.response.headers.get("set-auth-token"); // get the token from the response headers
+          // Store the token securely (e.g., in localStorage)
+          localStorage.setItem("bearer_token", authToken);
           window.location.href = "/dashboard";
         },
         onError: (response) => {

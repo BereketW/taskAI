@@ -18,37 +18,43 @@ datasource db {
  */
 
 model User {
-  id            String    @id
-  name          String    @db.Text
-  email         String    @unique
-  emailVerified Boolean
-  image         String?   @db.Text
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
+  id              String            @id
+  name            String            @db.Text
+  email           String
+  emailVerified   Boolean
+  image           String?           @db.Text
+  createdAt       DateTime
+  updatedAt       DateTime
+  sessions        Session[]
+  accounts        Account[]
+  Workspace       Workspace[]
+  WorkspaceMember WorkspaceMember[]
+  TaskList        TaskList[]
+  Task            Task[]
+  TaskComment     TaskComment[]
+  // AiSuggestion    AiSuggestion[]
+  TaskActivityLog TaskActivityLog[]
+  Reminder        Reminder[]
+  TaskAttachment  TaskAttachment[]
+  Notification    Notification[]
 
-  workspaces    Workspace[] // Owned workspaces
-  memberships   WorkspaceMember[] // Workspaces user is part of
-  taskLists     TaskList[] // Lists created by user
-  tasks         Task[] // Tasks assigned to user
-  comments      TaskComment[]
-  activityLogs  TaskActivityLog[]
-  reminders     Reminder[]
-  attachments   TaskAttachment[]
-  notifications Notification[]
+  @@unique([email])
+  @@map("user")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String   @unique
+  token     String
   createdAt DateTime
   updatedAt DateTime
   ipAddress String?  @db.Text
   userAgent String?  @db.Text
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
 }
 
 model Account {
@@ -66,21 +72,25 @@ model Account {
   password              String?   @db.Text
   createdAt             DateTime
   updatedAt             DateTime
+
+  @@map("account")
 }
 
-/**
- * ==========================
- */
-/**
- * 🔹 WORKSPACE & ORGANIZATION
- */
-/**
- * ==========================
- */
+model Verification {
+  id         String    @id
+  identifier String    @db.Text
+  value      String    @db.Text
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
 
 model Workspace {
   id           String            @id @default(uuid())
   name         String
+  description  String            @db.Text
   ownerId      String
   owner        User              @relation(fields: [ownerId], references: [id])
   visibility   Visibility
@@ -89,6 +99,8 @@ model Workspace {
   integrations Integration[]
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
+
+  @@map("workspace")
 }
 
 model WorkspaceMember {
@@ -99,6 +111,8 @@ model WorkspaceMember {
   userId      String
   role        Role
   joinedAt    DateTime  @default(now())
+
+  @@map("workspaceMember")
 }
 
 /**
@@ -112,8 +126,10 @@ model WorkspaceMember {
  */
 
 model TaskList {
-  id          String    @id @default(uuid())
+  id          String @id @default(uuid())
   name        String
+  description String @db.Text
+
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
   workspaceId String
   createdBy   User      @relation(fields: [createdById], references: [id])
@@ -124,22 +140,27 @@ model TaskList {
 }
 
 model Task {
-  id           String            @id @default(uuid())
+  id           String        @id @default(uuid())
   title        String
   description  String?
-  list         TaskList          @relation(fields: [listId], references: [id])
+  list         TaskList      @relation(fields: [listId], references: [id])
   listId       String
-  assignedTo   User?             @relation(fields: [assignedToId], references: [id])
+  assignedTo   User?         @relation(fields: [assignedToId], references: [id])
   assignedToId String?
   dueDate      DateTime?
+  dueTime      String
   priority     Priority
   status       TaskStatus
   comments     TaskComment[]
+
   activityLogs TaskActivityLog[]
   reminders    Reminder[]
+  category     String            @db.Text
   attachments  TaskAttachment[]
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
+
+  @@map("task")
 }
 
 /**
