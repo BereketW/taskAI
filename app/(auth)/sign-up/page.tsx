@@ -5,7 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Github, Loader2 } from "lucide-react";
+import { ArrowRight, Github, Loader2, Mail, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,11 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { authClient } from "@/lib/auth-client";
-import {
-  createDefaultTaskList,
-  createDefaultWorkspace,
-} from "@/lib/defaultworkspace";
 
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,26 +28,46 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
+
+  const handleGithubLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const { data, error } = await authClient.signIn.social({
+      provider: "github",
+      callbackURL: "/dashboard",
+    });
+  };
+
+  const handleGoogleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const { data, error } = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
     try {
       const { data, error } = await authClient.signUp.email(
         {
           name,
           email,
           password,
-          callbackURL: "/onboarding",
+          callbackURL: "/verify-email", // Changed to verification page
         },
         {
-          onRequest: (ctx) => {
+          onRequest: () => {
             setIsLoading(true);
           },
-          onSuccess: (data) => {
+          onSuccess: () => {
             setIsLoading(false);
-
-            window.location.href = "/onboarding";
+            setVerificationSent(true); // Show verification UI instead of redirect
           },
           onError: (ctx) => {
             setIsLoading(false);
@@ -62,13 +79,88 @@ export default function SignUpPage() {
       console.log(error);
     } finally {
       setIsLoading(false);
-      const { data: session } = authClient.useSession();
-      // createDefaultTaskList(session?.user.id);
-      // createDefaultWorkspace(session?.user.id);
     }
-
-    // Simulate API call
   };
+
+  const handleResendVerification = async () => {
+    setResendingEmail(true);
+    try {
+      await authClient.auth.resendVerificationEmail({ email });
+      // Show success message
+      alert("Verification email has been resent!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to resend verification email. Please try again.");
+    } finally {
+      setResendingEmail(false);
+    }
+  };
+
+  if (verificationSent) {
+    return (
+      <div className="w-full max-w-md">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card className="backdrop-blur-lg bg-white/10 dark:bg-gray-950/30 border-muted/40">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl font-bold">
+                Verify your email
+              </CardTitle>
+              <CardDescription>
+                We've sent a verification link to{" "}
+                <span className="font-medium">{email}</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert className="bg-primary/10 border-primary/20">
+                <Mail className="h-4 w-4 text-primary" />
+                <AlertDescription>
+                  Please check your inbox and click the verification link to
+                  complete your registration.
+                </AlertDescription>
+              </Alert>
+
+              <div className="text-sm text-muted-foreground">
+                <p>
+                  Didn't receive the email? Check your spam folder or click
+                  below to resend.
+                </p>
+              </div>
+
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleResendVerification}
+                disabled={resendingEmail}
+              >
+                {resendingEmail ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Resending...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Resend verification email
+                  </>
+                )}
+              </Button>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4">
+              <div className="text-sm text-center text-muted-foreground">
+                <Link href="/sign-in" className="text-primary hover:underline">
+                  Return to sign in
+                </Link>
+              </div>
+            </CardFooter>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md">
@@ -88,11 +180,19 @@ export default function SignUpPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-4">
-              <Button variant="outline" className="w-full" type="button">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleGithubLogin}
+              >
                 <Github className="mr-2 h-4 w-4" />
                 Continue with Github
               </Button>
-              <Button variant="outline" className="w-full" type="button">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleGoogleLogin}
+              >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

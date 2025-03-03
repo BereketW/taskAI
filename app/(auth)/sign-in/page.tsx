@@ -24,7 +24,32 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const handleGithubLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const { data, error } = await authClient.signIn.social({
+      provider: "github",
+      callbackURL: "/dashboard",
+    });
+    // Simulate API call
+    // setTimeout(() => {
+    //   setIsLoading(false)
+    //   window.location.href = "/dashboard"
+    // }, 1500)
+  };
+  const handleGoogleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const { data, error } = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
+    // Simulate API call
+    // setTimeout(() => {
+    //   setIsLoading(false)
+    //   window.location.href = "/dashboard"
+    // }, 1500)
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -32,7 +57,7 @@ export default function SignInPage() {
       {
         email,
         password,
-        callbackURL: "/dashboard",
+        // callbackURL: "/dashboard",
       },
       {
         onSuccess: (ctx) => {
@@ -40,10 +65,19 @@ export default function SignInPage() {
           const authToken = ctx.response.headers.get("set-auth-token"); // get the token from the response headers
           // Store the token securely (e.g., in localStorage)
           localStorage.setItem("bearer_token", authToken);
-          window.location.href = "/dashboard";
+          console.log(ctx);
+          alert(ctx.data);
+          if (!ctx.data.user.emailVerified) {
+            window.location.href = "/email-not-verified";
+            return;
+          }
+          // window.location.href = "/dashboard";
         },
         onError: (response) => {
           setIsLoading(false);
+          // if (response.error.status === 403) {
+          //   window.location.href = "/email-not-verified";
+          // }
           alert(response.error.message);
         },
         onRequest: (response) => {
@@ -74,11 +108,21 @@ export default function SignInPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-4">
-              <Button variant="outline" className="w-full" type="button">
+              <Button
+                onClick={handleGithubLogin}
+                variant="outline"
+                className="w-full"
+                type="button"
+              >
                 <Github className="mr-2 h-4 w-4" />
                 Continue with Github
               </Button>
-              <Button variant="outline" className="w-full" type="button">
+              <Button
+                onClick={handleGoogleLogin}
+                variant="outline"
+                className="w-full"
+                type="button"
+              >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

@@ -48,6 +48,7 @@ export default function SettingsPage() {
     error, //error object
     refetch, //refetch the session
   } = authClient.useSession();
+
   // Account Setup State
   const [firstName, setFirstName] = useState("John");
   const [lastName, setLastName] = useState("Doe");
@@ -132,7 +133,7 @@ export default function SettingsPage() {
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-20 w-20">
-                    <AvatarImage src="/placeholder.svg" />
+                    <AvatarImage src={session?.user.image} />
                     <AvatarFallback>{session?.user.name}</AvatarFallback>
                   </Avatar>
                   <Button variant="outline">Change Avatar</Button>
@@ -142,11 +143,19 @@ export default function SettingsPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="firstName">First name</Label>
-                      <Input id="firstName" placeholder="John" />
+                      <Input
+                        defaultValue={session?.user.name.split(" ")[0]}
+                        id="firstName"
+                        placeholder="John"
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="lastName">Last name</Label>
-                      <Input id="lastName" placeholder="Doe" />
+                      <Input
+                        defaultValue={session?.user.name.split(" ")[1]}
+                        id="lastName"
+                        placeholder="Doe"
+                      />
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -154,6 +163,7 @@ export default function SettingsPage() {
                     <Input
                       id="email"
                       type="email"
+                      defaultValue={session?.user.email}
                       placeholder="john@example.com"
                     />
                   </div>
@@ -235,9 +245,10 @@ export default function SettingsPage() {
                 <div className="relative">
                   <div className="h-20 w-20 rounded-full border-2 border-muted bg-muted/50 p-1">
                     <div className="flex h-full w-full items-center justify-center rounded-full bg-muted">
-                      <span className="text-2xl font-semibold text-muted-foreground">
-                        {session?.user.name[0]}
-                      </span>
+                      <Avatar className="h-20 w-20">
+                        <AvatarImage src={session?.user.image} />
+                        <AvatarFallback>{session?.user.name}</AvatarFallback>
+                      </Avatar>
                     </div>
                   </div>
                   <Button
@@ -267,7 +278,7 @@ export default function SettingsPage() {
                       <Input
                         id="setup-firstName"
                         placeholder="John"
-                        value={firstName}
+                        value={session?.user.name.split(" ")[0]}
                         onChange={(e) => setFirstName(e.target.value)}
                       />
                     </div>
@@ -276,7 +287,7 @@ export default function SettingsPage() {
                       <Input
                         id="setup-lastName"
                         placeholder="Doe"
-                        value={lastName}
+                        value={session?.user.name.split(" ")[1]}
                         onChange={(e) => setLastName(e.target.value)}
                       />
                     </div>
@@ -287,7 +298,7 @@ export default function SettingsPage() {
                       id="setup-email"
                       type="email"
                       placeholder="john@example.com"
-                      value={email}
+                      value={session?.user.email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
