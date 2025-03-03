@@ -2,6 +2,8 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { PrismaClient } from "@prisma/client";
 import { bearer } from "better-auth/plugins";
+import { email } from "@/actions/send-email";
+// import { email } from "@/actions/send-email";
 const prisma = new PrismaClient();
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -9,7 +11,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-
+    // requireEmailVerification: true,
     autoSignIn: false,
   },
   plugins: [bearer()],
@@ -29,10 +31,22 @@ export const auth = betterAuth({
       maxAge: 5 * 60, // Cache duration in seconds
     },
   },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }, request) => {
+      await email({
+        verification_url: url,
+        email: user.email,
+      });
+    },
+  },
   socialProviders: {
-    // google: {
-    //   clientId: process.env.GOOGLE_CLIENT_ID,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    // },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    },
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    },
   },
 });
