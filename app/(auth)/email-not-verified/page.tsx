@@ -36,8 +36,8 @@ export default function EmailNotVerifiedPage() {
       //   }
 
       const { data, error } = await authClient.sendVerificationEmail({
-        email: "anonytempo5@gmail.com",
-        // email: session?.user.email,
+        // email: "anonytempo5@gmail.com",
+        email: session?.user.email,
         callbackURL: "/verify-email",
       });
 
