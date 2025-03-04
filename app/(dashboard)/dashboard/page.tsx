@@ -24,13 +24,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default function Home() {
-  const { session } = authClient.useSession();
-  if (!session.user) {
-    redirect("");
-  }
-  if (!session?.user.emailVerified) {
-    redirect("/email-not-verified");
-  }
+  // const { data: session } = authClient.useSession();
+  // if (!session.user) {
+  //   redirect("");
+  // }
+  // if (!session?.user.emailVerified) {
+  //   redirect("/email-not-verified");
+  // }
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
