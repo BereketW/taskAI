@@ -21,6 +21,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { authClient } from "@/lib/auth-client";
+import { defaultWorkspace } from "@/actions/workspaces";
+import { log } from "console";
 
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +32,7 @@ export default function SignUpPage() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
   const [resendingEmail, setResendingEmail] = useState(false);
-
+  // const { data: session } = authClient.useSession();
   const handleGithubLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -59,15 +61,22 @@ export default function SignUpPage() {
           name,
           email,
           password,
-          callbackURL: "/verify-email", // Changed to verification page
+          // callbackURL: "/verify-email", // Changed to verification page
         },
         {
           onRequest: () => {
             setIsLoading(true);
           },
-          onSuccess: () => {
+          onSuccess: async () => {
+            try {
+              const response = await defaultWorkspace();
+              console.log(response);
+            } catch (error) {
+              console.log(error);
+            }
             setIsLoading(false);
-            setVerificationSent(true); // Show verification UI instead of redirect
+            setVerificationSent(true);
+            // Show verification UI instead of redirect
           },
           onError: (ctx) => {
             setIsLoading(false);
@@ -83,9 +92,12 @@ export default function SignUpPage() {
   };
 
   const handleResendVerification = async () => {
+    const { data: session } = authClient.getSession();
     setResendingEmail(true);
     try {
-      await authClient.auth.resendVerificationEmail({ email });
+      await authClient.sendVerificationEmail({
+        email: "bereketsodenoo@gmail.com",
+      });
       // Show success message
       alert("Verification email has been resent!");
     } catch (error) {
