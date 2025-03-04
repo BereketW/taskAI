@@ -57,7 +57,7 @@ export default function SignInPage() {
       {
         email,
         password,
-        // callbackURL: "/dashboard",
+        callbackURL: "/dashboard",
       },
       {
         onSuccess: (ctx) => {
@@ -66,19 +66,14 @@ export default function SignInPage() {
           // Store the token securely (e.g., in localStorage)
           localStorage.setItem("bearer_token", authToken);
           console.log(ctx);
-          alert(ctx.data);
-          if (!ctx.data.user.emailVerified) {
-            window.location.href = "/email-not-verified";
-            return;
-          }
-          // window.location.href = "/dashboard";
+
+          window.location.href = "/dashboard";
         },
         onError: (response) => {
           setIsLoading(false);
-          // if (response.error.status === 403) {
-          //   window.location.href = "/email-not-verified";
-          // }
-          alert(response.error.message);
+          if (response.error.status === 403) {
+            window.location.href = "/email-not-verified";
+          }
         },
         onRequest: (response) => {
           setIsLoading(true);
