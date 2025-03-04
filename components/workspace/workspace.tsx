@@ -46,11 +46,12 @@ export default function WorkspacesPage() {
       try {
         const { data } = await getAllWorkspaces();
 
-        console.log(data.workspaces.members);
+        // console.log(data.workspaces.members);
+        console.log(data);
         setWorkspace(data.workspaces);
       } catch (err) {
         console.log(err);
-        setError(err.message);
+        setError(err);
       } finally {
         setIsLoading(false);
       }
