@@ -2,7 +2,7 @@ import WorkspaceDetailPage from "@/components/workspace/worspace-detail-page";
 
 import React from "react";
 import axios from "axios";
-import { getAllWorkspaces } from "@/actions/workspaces";
+import { getAllWorkspaces, getSingleWorkspace } from "@/actions/workspaces";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { authClient } from "@/lib/auth-client";
@@ -19,6 +19,7 @@ export default async function Page({
 
   // // No need for await
   // // const token = localStorage.getItem("bearer_token");
+  const data = await getSingleWorkspace(id);
   // const workspaces = await fetch(
   //   process.env.BASE_URL + `/api/workspace/${id}`,
   //   {
@@ -34,5 +35,5 @@ export default async function Page({
   // console.log(workspaces, "workspaces");
   // const workspace = (await workspaces.json()).workspace;
 
-  return <WorkspaceDetailPage id={id} />;
+  return <WorkspaceDetailPage id={id} workspace={data.data.workspace} />;
 }
