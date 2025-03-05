@@ -12,7 +12,7 @@ export async function getAllWorkspaces() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session?.session.token}`,
       },
-      cache: "force-cache",
+      cache: "no-store",
       credentials: "include",
     });
     const data = await workspaces.json();
@@ -87,5 +87,29 @@ export async function createTask(data) {
   } catch (err) {
     console.log(err);
     return { error: err.message, message: "Could not create task" };
+  }
+}
+
+export async function defaultWorkspace() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  try {
+    const taskList = await fetch(
+      process.env.BASE_URL + "/api/default/tasklist",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.session.token}`,
+        },
+
+        cache: "force-cache",
+        credentials: "include",
+      }
+    );
+    const response = await taskList.json();
+    return { response };
+  } catch (err) {
+    console.log(err);
+    return { error: err.message, message: "Could not create task list" };
   }
 }

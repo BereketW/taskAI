@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { timeAgo } from "@/constants/time";
 import { authClient } from "@/lib/auth-client";
 import { getAllWorkspaces } from "@/actions/workspaces";
@@ -41,12 +42,10 @@ export default function WorkspacesPage() {
   const { data: session } = authClient.useSession();
   useEffect(() => {
     async function getWorkspace() {
-      setIsLoading(false);
+      setIsLoading(true);
 
       try {
         const { data } = await getAllWorkspaces();
-
-        // console.log(data.workspaces.members);
         console.log(data);
         setWorkspace(data.workspaces);
       } catch (err) {
@@ -121,6 +120,40 @@ export default function WorkspacesPage() {
     show: { opacity: 1, y: 0 },
   };
 
+  const WorkspaceSkeleton = () => (
+    <Card className="group relative overflow-hidden">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-4 w-60" />
+          </div>
+          <Skeleton className="h-8 w-8 rounded-full" />
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex -space-x-2">
+            {[...Array(3)].map((_, i) => (
+              <Skeleton
+                key={i}
+                className="h-8 w-8 rounded-full border-2 border-background"
+              />
+            ))}
+          </div>
+          <Skeleton className="h-8 w-20" />
+        </div>
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Skeleton className="h-10 w-full" />
+      </CardFooter>
+    </Card>
+  );
+
   return (
     <div className="flex-1 space-y-8 p-8 pt-6">
       <div className="flex items-center justify-between">
@@ -158,85 +191,100 @@ export default function WorkspacesPage() {
         animate="show"
         className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
       >
-        {filteredWorkspaces.map((workspace) => (
-          <motion.div key={workspace.id} variants={item}>
-            <Card className="group relative overflow-hidden">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <Link
-                    href={`/workspaces/${workspace.id}`}
-                    className="transition-colors group-hover:text-primary"
-                  >
-                    <CardTitle>{workspace.name}</CardTitle>
-                  </Link>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onSelect={() =>
-                          router.push(`/workspaces/${workspace.id}/edit`)
-                        }
-                      >
-                        Edit Workspace
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>Duplicate Workspace</DropdownMenuItem>
-                      <DropdownMenuItem>Archive Workspace</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">
-                        Delete Workspace
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <CardDescription>{workspace.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex -space-x-2">
-                    {workspace.members.map((member, index) => (
-                      <Avatar
-                        key={index}
-                        className="border-2 border-background"
-                      >
-                        <AvatarImage src={member.avatar} />
-                        <AvatarFallback>{member.name[0]}</AvatarFallback>
-                      </Avatar>
-                    ))}
-                    {workspace.members > workspace.members.length && (
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-muted text-xs">
-                        +{workspace.members - workspace.members.length}
-                      </div>
-                    )}
+        {isLoading ? (
+          // Show skeletons while loading
+          [...Array(6)].map((_, index) => (
+            <motion.div key={`skeleton-${index}`} variants={item}>
+              <WorkspaceSkeleton />
+            </motion.div>
+          ))
+        ) : filteredWorkspaces.length > 0 ? (
+          // Show actual workspaces when loaded
+          filteredWorkspaces.map((workspace) => (
+            <motion.div key={workspace.id} variants={item}>
+              <Card className="group relative overflow-hidden">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Link
+                      href={`/workspaces/${workspace.id}`}
+                      className="transition-colors group-hover:text-primary"
+                    >
+                      <CardTitle>{workspace.name}</CardTitle>
+                    </Link>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onSelect={() =>
+                            router.push(`/workspaces/${workspace.id}/edit`)
+                          }
+                        >
+                          Edit Workspace
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>Duplicate Workspace</DropdownMenuItem>
+                        <DropdownMenuItem>Archive Workspace</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive">
+                          Delete Workspace
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <Users className="h-4 w-4" />
-                    {workspace.members}
+                  <CardDescription>{workspace.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex -space-x-2">
+                      {workspace.members.map((member, index) => (
+                        <Avatar
+                          key={index}
+                          className="border-2 border-background"
+                        >
+                          <AvatarImage src={member.avatar} />
+                          <AvatarFallback>{member.name[0]}</AvatarFallback>
+                        </Avatar>
+                      ))}
+                      {workspace.members > workspace.members.length && (
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-muted text-xs">
+                          +{workspace.members - workspace.members.length}
+                        </div>
+                      )}
+                    </div>
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <Users className="h-4 w-4" />
+                      {workspace.members}
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <FolderKanban className="h-4 w-4 text-muted-foreground" />
+                      <span>{workspace.taskLists.length} lists</span>
+                    </div>
+                    <span className="text-muted-foreground">
+                      Updated {timeAgo(new Date(workspace.updatedAt))}
+                    </span>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full">
+                    <Link href={`/workspaces/${workspace.id}`}>
+                      View Workspace
+                    </Link>
                   </Button>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <FolderKanban className="h-4 w-4 text-muted-foreground" />
-                    <span>{workspace.taskLists.length} lists</span>
-                  </div>
-                  <span className="text-muted-foreground">
-                    Updated {timeAgo(new Date(workspace.updatedAt))}
-                  </span>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button asChild className="w-full">
-                  <Link href={`/workspaces/${workspace.id}`}>
-                    View Workspace
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          </motion.div>
-        ))}
+                </CardFooter>
+              </Card>
+            </motion.div>
+          ))
+        ) : (
+          // Show message when no workspaces match the search
+          <div className="col-span-full text-center">
+            <p className="text-muted-foreground">No workspaces found</p>
+          </div>
+        )}
       </motion.div>
     </div>
   );

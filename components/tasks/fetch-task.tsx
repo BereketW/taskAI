@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertCircle,
   Calendar,
+  CalendarIcon,
   Check,
   Clock,
   Edit,
@@ -35,11 +36,37 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Label } from "../ui/label";
+import { cn } from "@/lib/utils";
+import { format } from "path";
+import { Textarea } from "../ui/textarea";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 export default function TasksPage({ tasks }) {
   console.log("TasksPage", tasks);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("all");
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const [date, setDate] = useState<Date>();
+
+  // Form state for editing task
+  const [formState, setFormState] = useState({
+    title: "",
+    description: "",
+    priority: "",
+    category: "",
+    dueDate: "",
+  });
 
   const filteredTasks = tasks.filter(
     (task) =>
@@ -50,11 +77,11 @@ export default function TasksPage({ tasks }) {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case "high":
+      case "HIGH":
         return "bg-red-500";
-      case "medium":
+      case "MEDIUM":
         return "bg-yellow-500";
-      case "low":
+      case "LOW":
         return "bg-green-500";
       default:
         return "bg-muted";
@@ -74,6 +101,19 @@ export default function TasksPage({ tasks }) {
   const item = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 },
+  };
+
+  const handleEditTask = (task) => {
+    setEditingTask(task);
+    setFormState({
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      category: task.category,
+      dueDate: task.dueDate,
+      tags: task.tags,
+    });
+    setIsEditDialogOpen(true);
   };
 
   return (
@@ -188,7 +228,7 @@ export default function TasksPage({ tasks }) {
                               <Badge
                                 key={tag}
                                 variant="secondary"
-                                className="text-xs"
+                                className={`text-xs ${!tag && "hidden"}`}
                               >
                                 {tag}
                               </Badge>
@@ -196,7 +236,11 @@ export default function TasksPage({ tasks }) {
                           </div>
                         </div>
                         <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                          <Button variant="ghost" size="icon">
+                          <Button
+                            onClick={handleEditTask}
+                            variant="ghost"
+                            size="icon"
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="icon">
@@ -319,6 +363,131 @@ export default function TasksPage({ tasks }) {
           </motion.div>
         </CardContent>
       </Card>
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] bg-background/95 backdrop-blur-lg border-muted/30">
+          <DialogHeader>
+            <DialogTitle>Edit Task</DialogTitle>
+            <DialogDescription>
+              Make changes to your task here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title">Task Title</Label>
+              <Input
+                id="title"
+                value={formState.title}
+                onChange={(e) =>
+                  setFormState({ ...formState, title: e.target.value })
+                }
+                className="border-muted/40"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formState.description}
+                onChange={(e) =>
+                  setFormState({ ...formState, description: e.target.value })
+                }
+                className="border-muted/40"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Priority</Label>
+                <RadioGroup
+                  value={formState.priority}
+                  onValueChange={(value) =>
+                    setFormState({ ...formState, priority: value })
+                  }
+                  className="flex space-x-2"
+                >
+                  <div className="flex items-center space-x-1">
+                    <RadioGroupItem value="low" id="low" />
+                    <Label htmlFor="low" className="text-emerald-500">
+                      Low
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <RadioGroupItem value="medium" id="medium" />
+                    <Label htmlFor="medium" className="text-amber-500">
+                      Medium
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <RadioGroupItem value="high" id="high" />
+                    <Label htmlFor="high" className="text-red-500">
+                      High
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="category">Category</Label>
+                <Select
+                  value={formState.category}
+                  onValueChange={(value) =>
+                    setFormState({ ...formState, category: value })
+                  }
+                >
+                  <SelectTrigger id="category" className="border-muted/40">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Work">Work</SelectItem>
+                    <SelectItem value="Personal">Personal</SelectItem>
+                    <SelectItem value="Health">Health</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="Education">Education</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Due Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal border-muted/40",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : "Select date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialfocus={"true"}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

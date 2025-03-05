@@ -29,13 +29,12 @@ import { Resend } from "resend";
 const resend = new Resend("re_4ffmShNX_DunFtmzMHjcvKKanYv1qtadw");
 export async function email(value) {
   try {
-    const { data, error } = await resend.emails.send({
+    resend.emails.send({
       from: "bereketsodeno7@gmail.com",
-      to: ["anonytempo5@gmail.com"],
+      to: "anonytempo5@gmail.com",
       subject: "TaskAI - Verify your email address",
       html: `<div><p>Verify your email address</p><a href="http://localhost:3000">Verify</a></div>`,
     });
-    console.log(data);
   } catch (error) {
     console.log(error);
   }
