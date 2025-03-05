@@ -65,7 +65,7 @@ export default function ResetPasswordPage() {
         throw new Error("Invalid reset token");
       }
 
-      const { error } = await authClient.auth.resetPasswordWithToken({
+      const { error } = await authClient.resetPassword({
         token,
         password,
       });
