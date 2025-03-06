@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertCircle,
@@ -53,25 +53,59 @@ import { cn } from "@/lib/utils";
 import { format } from "path";
 import { Textarea } from "../ui/textarea";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { fetchTask } from "@/actions/tasks";
 
-export default function TasksPage({ tasks }) {
-  console.log("TasksPage", tasks);
+export default function TasksPage() {
+  // console.log("TasksPage", tasks);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("all");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [time, setTime] = useState("");
   const [date, setDate] = useState<Date>();
+  const [isChecked, setIsChecked] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
+  const [tasks, setTasks] = useState([]);
+  useEffect(() => {
+    async function getTasks() {
+      setIsLoading(true);
+      try {
+        const { tasks } = await fetchTask();
+        setTasks(tasks);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    getTasks();
+  }, [isChecked]);
+
+  async function checkAsCompleted(id) {
+    try {
+      const { response, status } = await fetch(`/api/task/completed`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+      console.log(response, status);
+      if (status === 200) {
+        setIsChecked(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // Form state for editing task
   const [formState, setFormState] = useState({
-    title: editingTask?.title || "",
-    description: editingTask?.description || "",
-    priority: editingTask?.priority || "",
-    category: editingTask?.category || "",
-    time: editingTask?.dueTime || "",
-    dueDate: date ? date : editingTask?.dueDate,
+    title: "",
+    description: "",
+    priority: "",
+    category: "",
+    time: "",
+    dueDate: null,
   });
 
   const filteredTasks = tasks.filter(
@@ -130,6 +164,7 @@ export default function TasksPage({ tasks }) {
       tags: task.tags,
       time: task.dueTime,
     });
+    console.log(formState);
     setIsEditDialogOpen(true);
   };
 
@@ -211,15 +246,16 @@ export default function TasksPage({ tasks }) {
                       <div className="flex items-start gap-4">
                         <Checkbox
                           id={`task-${task.id}`}
-                          checked={task.status === "PENDING"}
+                          checked={task.status === "COMPLETED" || isChecked}
                           className="mt-1"
+                          onClick={() => checkAsCompleted(task.id)}
                         />
                         <div className="flex-1 space-y-1">
                           <div className="flex items-center gap-2">
                             <label
                               htmlFor={`task-${task.id}`}
                               className={`text-base font-medium ${
-                                task.completed
+                                task.status === "COMPLETED"
                                   ? "line-through text-muted-foreground"
                                   : ""
                               }`}
@@ -239,7 +275,9 @@ export default function TasksPage({ tasks }) {
                           <div className="flex flex-wrap items-center gap-2 pt-2">
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
                               <Clock className="h-3.5 w-3.5" />
-                              <span>{task.dueDate}</span>
+                              <span>
+                                {new Date(task.dueDate).toDateString()}
+                              </span>
                             </div>
                             {task.tags.map((tag) => (
                               <Badge
@@ -468,7 +506,7 @@ export default function TasksPage({ tasks }) {
                         Category
                       </Label>
                       <Select
-                        value={formState.category}
+                        value={formState.category || ""}
                         onValueChange={(value) =>
                           setFormState({ ...formState, category: value })
                         }
@@ -556,8 +594,17 @@ export default function TasksPage({ tasks }) {
                       <div className="space-y-2">
                         <Label className="text-sm font-medium">Due Date</Label>
                         <Input
-                          value={formState.dueDate}
-                          onChange={(e) => setDate(new Date(e.target.value))}
+                          value={
+                            formState.dueDate
+                              ? formState.dueDate.split("T")[0]
+                              : ""
+                          }
+                          onChange={(e) =>
+                            setFormState({
+                              ...formState,
+                              dueDate: new Date(e.target.value).toISOString(),
+                            })
+                          }
                           type="date"
                         />
                       </div>
