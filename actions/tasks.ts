@@ -13,7 +13,7 @@ export async function fetchTask() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session?.session.token}`,
       },
-      cache: "force-cache",
+      cache: "no-store",
       credentials: "include",
     });
     const data = await tasks.json();
