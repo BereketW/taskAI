@@ -7,13 +7,16 @@ import {
   Calendar,
   CalendarIcon,
   Check,
+  CheckCircle,
   Clock,
   Edit,
   Filter,
   Plus,
   Search,
   Sparkles,
+  Tag,
   Trash2,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -57,15 +60,18 @@ export default function TasksPage({ tasks }) {
   const [selectedPriority, setSelectedPriority] = useState("all");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [time, setTime] = useState("");
   const [date, setDate] = useState<Date>();
+  const [activeTab, setActiveTab] = useState("details");
 
   // Form state for editing task
   const [formState, setFormState] = useState({
-    title: "",
-    description: "",
-    priority: "",
-    category: "",
-    dueDate: "",
+    title: editingTask?.title || "",
+    description: editingTask?.description || "",
+    priority: editingTask?.priority || "",
+    category: editingTask?.category || "",
+    time: editingTask?.dueTime || "",
+    dueDate: date ? date : editingTask?.dueDate,
   });
 
   const filteredTasks = tasks.filter(
@@ -86,6 +92,16 @@ export default function TasksPage({ tasks }) {
       default:
         return "bg-muted";
     }
+  };
+  const priorityIcons = {
+    LOW: <div className="w-2 h-2 rounded-full bg-emerald-500" />,
+    MEDIUM: <div className="w-2 h-2 rounded-full bg-amber-500" />,
+    HIGH: <div className="w-2 h-2 rounded-full bg-red-500" />,
+  };
+  const priorityColors = {
+    LOW: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+    MEDIUM: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+    HIGH: "bg-red-500/10 text-red-500 border-red-500/20",
   };
 
   const container = {
@@ -112,6 +128,7 @@ export default function TasksPage({ tasks }) {
       category: task.category,
       dueDate: task.dueDate,
       tags: task.tags,
+      time: task.dueTime,
     });
     setIsEditDialogOpen(true);
   };
@@ -237,7 +254,7 @@ export default function TasksPage({ tasks }) {
                         </div>
                         <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                           <Button
-                            onClick={handleEditTask}
+                            onClick={() => handleEditTask(task)}
                             variant="ghost"
                             size="icon"
                           >
@@ -364,128 +381,276 @@ export default function TasksPage({ tasks }) {
         </CardContent>
       </Card>
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] bg-background/95 backdrop-blur-lg border-muted/30">
-          <DialogHeader>
-            <DialogTitle>Edit Task</DialogTitle>
-            <DialogDescription>
-              Make changes to your task here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="title">Task Title</Label>
-              <Input
-                id="title"
-                value={formState.title}
-                onChange={(e) =>
-                  setFormState({ ...formState, title: e.target.value })
-                }
-                className="border-muted/40"
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formState.description}
-                onChange={(e) =>
-                  setFormState({ ...formState, description: e.target.value })
-                }
-                className="border-muted/40"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Priority</Label>
-                <RadioGroup
-                  value={formState.priority}
-                  onValueChange={(value) =>
-                    setFormState({ ...formState, priority: value })
-                  }
-                  className="flex space-x-2"
+        <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden bg-background/95 backdrop-blur-xl border border-muted/30 shadow-lg">
+          <div className="flex flex-col h-full">
+            <DialogHeader className="px-6 pt-6 pb-2">
+              <div className="flex items-center justify-between">
+                <DialogTitle className="text-2xl font-bold">
+                  Edit Task
+                </DialogTitle>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="rounded-full h-8 w-8 opacity-70 hover:opacity-100"
                 >
-                  <div className="flex items-center space-x-1">
-                    <RadioGroupItem value="low" id="low" />
-                    <Label htmlFor="low" className="text-emerald-500">
-                      Low
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <RadioGroupItem value="medium" id="medium" />
-                    <Label htmlFor="medium" className="text-amber-500">
-                      Medium
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <RadioGroupItem value="high" id="high" />
-                    <Label htmlFor="high" className="text-red-500">
-                      High
-                    </Label>
-                  </div>
-                </RadioGroup>
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
+              <DialogDescription className="text-muted-foreground">
+                Make changes to your task here. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
 
-              <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
-                <Select
-                  value={formState.category}
-                  onValueChange={(value) =>
-                    setFormState({ ...formState, category: value })
-                  }
-                >
-                  <SelectTrigger id="category" className="border-muted/40">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Work">Work</SelectItem>
-                    <SelectItem value="Personal">Personal</SelectItem>
-                    <SelectItem value="Health">Health</SelectItem>
-                    <SelectItem value="Finance">Finance</SelectItem>
-                    <SelectItem value="Education">Education</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid gap-2">
-              <Label>Due Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal border-muted/40",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : "Select date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialfocus={"true"}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsEditDialogOpen(false)}
+            <Tabs
+              defaultValue="details"
+              className="w-full"
+              value={activeTab}
+              onValueChange={setActiveTab}
             >
-              Cancel
-            </Button>
-            <Button>Save Changes</Button>
-          </DialogFooter>
+              <div className="px-6">
+                <TabsList className="w-full grid grid-cols-2 mb-4">
+                  <TabsTrigger value="details" className="rounded-md">
+                    Task Details
+                  </TabsTrigger>
+                  <TabsTrigger value="schedule" className="rounded-md">
+                    Schedule & Priority
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              <div className="px-6 overflow-y-auto max-h-[60vh]">
+                <TabsContent value="details" className="mt-0 space-y-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="space-y-4"
+                  >
+                    <div className="space-y-2">
+                      <Label htmlFor="title" className="text-sm font-medium">
+                        Task Title
+                      </Label>
+                      <Input
+                        id="title"
+                        value={formState.title}
+                        onChange={(e) =>
+                          setFormState({ ...formState, title: e.target.value })
+                        }
+                        className="border-input/30 bg-background/50 focus-visible:ring-offset-0 focus-visible:ring-primary/20"
+                        placeholder="Enter task title"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="description"
+                        className="text-sm font-medium"
+                      >
+                        Description
+                      </Label>
+                      <Textarea
+                        id="description"
+                        value={formState.description}
+                        onChange={(e) =>
+                          setFormState({
+                            ...formState,
+                            description: e.target.value,
+                          })
+                        }
+                        className="min-h-[120px] border-input/30 bg-background/50 focus-visible:ring-offset-0 focus-visible:ring-primary/20"
+                        placeholder="Describe your task in detail"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="category" className="text-sm font-medium">
+                        Category
+                      </Label>
+                      <Select
+                        value={formState.category}
+                        onValueChange={(value) =>
+                          setFormState({ ...formState, category: value })
+                        }
+                      >
+                        <SelectTrigger
+                          id="category"
+                          className="border-input/30 bg-background/50 focus:ring-offset-0 focus:ring-primary/20"
+                        >
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Work">
+                            <div className="flex items-center gap-2">
+                              <Tag className="h-4 w-4 text-blue-500" />
+                              <span>Work</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="Personal">
+                            <div className="flex items-center gap-2">
+                              <Tag className="h-4 w-4 text-purple-500" />
+                              <span>Personal</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="Health">
+                            <div className="flex items-center gap-2">
+                              <Tag className="h-4 w-4 text-green-500" />
+                              <span>Health</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="Finance">
+                            <div className="flex items-center gap-2">
+                              <Tag className="h-4 w-4 text-amber-500" />
+                              <span>Finance</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="Education">
+                            <div className="flex items-center gap-2">
+                              <Tag className="h-4 w-4 text-indigo-500" />
+                              <span>Education</span>
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </motion.div>
+                </TabsContent>
+
+                <TabsContent value="schedule" className="mt-0 space-y-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="space-y-4"
+                  >
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">
+                        Priority Level
+                      </Label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {["LOW", "MEDIUM", "HIGH"].map((priority) => (
+                          <div
+                            key={priority}
+                            className={cn(
+                              "flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-all",
+                              formState.priority === priority
+                                ? priorityColors[priority] +
+                                    " ring-1 ring-offset-1 ring-offset-background ring-" +
+                                    priority.split("-")[0]
+                                : "border-muted/40 hover:border-muted"
+                            )}
+                            onClick={() =>
+                              setFormState({ ...formState, priority })
+                            }
+                          >
+                            {priorityIcons[priority]}
+                            <span className="capitalize font-medium text-sm">
+                              {priority}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Due Date</Label>
+                        <Input
+                          value={formState.dueDate}
+                          onChange={(e) => setDate(new Date(e.target.value))}
+                          type="date"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="time" className="text-sm font-medium">
+                          Due Time
+                        </Label>
+                        <div className="relative">
+                          <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="time"
+                            type="time"
+                            value={formState.time}
+                            onChange={(e) => setTime(e.target.value)}
+                            className="pl-10 border-input/30 bg-background/50"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-lg border border-muted/30 bg-muted/10">
+                      <div className="flex items-start gap-3">
+                        <div className="mt-1 p-1 rounded-full bg-primary/10">
+                          <CheckCircle className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-medium">Task Status</h4>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            This task is currently in progress. Mark it as
+                            complete when finished.
+                          </p>
+                          <Button variant="outline" size="sm" className="mt-2">
+                            Mark as Complete
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </TabsContent>
+              </div>
+            </Tabs>
+
+            <DialogFooter className="px-6 py-4 border-t border-muted/20 mt-4">
+              <div className="flex justify-between w-full items-center">
+                <Button
+                  variant="ghost"
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="text-muted-foreground"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  // onClick={handleSave}
+                  // disabled={isSaving}
+                  className="relative overflow-hidden group"
+                >
+                  <span className={cn("transition-all duration-300")}>
+                    Save Changes
+                  </span>
+                  {/* {isSaving && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          duration: 1,
+                          repeat: Number.POSITIVE_INFINITY,
+                          ease: "linear",
+                        }}
+                      >
+                        <svg className="h-5 w-5 text-white" viewBox="0 0 24 24">
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                      </motion.div>
+                    </div>
+                  )} */}
+                </Button>
+              </div>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
