@@ -536,6 +536,7 @@ export default function CalendarPage() {
                         interactionPlugin,
                         listPlugin,
                       ]}
+                      themeSystem="united"
                       initialView={view}
                       headerToolbar={false} // We'll use our own header
                       events={tasks ? formatTasksForCalendar(tasks) : []}
