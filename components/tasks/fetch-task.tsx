@@ -54,6 +54,7 @@ import { format } from "path";
 import { Textarea } from "../ui/textarea";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { fetchTask } from "@/actions/tasks";
+import { Skeleton } from "../ui/skeleton";
 
 export default function TasksPage() {
   // console.log("TasksPage", tasks);
@@ -75,6 +76,8 @@ export default function TasksPage() {
         setTasks(tasks);
       } catch (e) {
         console.log(e);
+      } finally {
+        setIsLoading(false);
       }
     }
     getTasks();
@@ -232,6 +235,48 @@ export default function TasksPage() {
                 animate="show"
                 className="space-y-4"
               >
+                {isLoading && (
+                  <AnimatePresence>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <motion.div
+                        key={i}
+                        variants={item}
+                        layout
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="group relative rounded-lg border p-4 hover:bg-muted/50"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="w-5 h-5 rounded bg-muted" />
+                          <div className="flex-1 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <Skeleton
+                                className={`text-base font-medium w-72 h-10 bg-muted`}
+                              ></Skeleton>
+
+                              <Skeleton className="bg-muted w-100" />
+                            </div>
+                            <Skeleton className="text-sm text-muted-foreground" />
+                            <div className="flex flex-wrap items-center gap-2 pt-2">
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3.5 w-3.5" />
+                                <Skeleton className="w-10 h-10"></Skeleton>
+                              </div>
+                              {[1, 2, 3, 4, 5].map((i) => (
+                                <Skeleton
+                                  key={i}
+                                  variant="secondary"
+                                  className={`text-xs `}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                )}
                 <AnimatePresence>
                   {filteredTasks.map((task) => (
                     <motion.div
