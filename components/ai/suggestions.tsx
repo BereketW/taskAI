@@ -40,7 +40,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function AISuggestionsPage() {
+export default function AISuggestionsPage({ insights }) {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filter, setFilter] = useState("all");
 
@@ -163,7 +163,9 @@ export default function AISuggestionsPage() {
             <Brain className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">92%</div>
+            <div className="text-2xl font-bold">
+              {insights.confidenceScore * 100}%
+            </div>
             <p className="text-xs text-muted-foreground">
               Based on your workflow patterns
             </p>
@@ -177,7 +179,9 @@ export default function AISuggestionsPage() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8.5h</div>
+            <div className="text-2xl font-bold">
+              {insights.potentialTimeSaved}h
+            </div>
             <p className="text-xs text-muted-foreground">
               Per week with suggested optimizations
             </p>
@@ -191,9 +195,16 @@ export default function AISuggestionsPage() {
             <Sparkles className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">
+              {insights.activeActionsCount}
+            </div>
             <p className="text-xs text-muted-foreground">
-              4 high-impact suggestions
+              {
+                insights.actions.filter(
+                  (action) => action.impactLevel === "high"
+                ).length
+              }{" "}
+              high-impact suggestions
             </p>
           </CardContent>
         </Card>
@@ -205,7 +216,9 @@ export default function AISuggestionsPage() {
             <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">76%</div>
+            <div className="text-2xl font-bold">
+              {insights.implementationRate * 100}%
+            </div>
             <p className="text-xs text-muted-foreground">
               Of suggestions implemented
             </p>
@@ -244,7 +257,7 @@ export default function AISuggestionsPage() {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-3">
-                {quickActions.map((action) => (
+                {insights.actions.map((action) => (
                   <Card key={action.id}>
                     <CardContent className="p-4">
                       <div className="space-y-2">
