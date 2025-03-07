@@ -5,5 +5,5 @@ import React from "react";
 export default async function page() {
   const { tasks } = await fetchTask();
 
-  return <TasksPage tasks={tasks} />;
+  return <Tasks Page tasks={tasks} />;
 }
