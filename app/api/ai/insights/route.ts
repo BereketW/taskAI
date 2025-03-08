@@ -6,7 +6,7 @@ import { OpenAI } from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { headers } from "next/headers";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.DEEPSEEK_API_KEY,
@@ -50,8 +50,18 @@ export async function GET(req: NextRequest, res: NextResponse) {
     estimatedTime,
     actionType,
     impactLevel: high, medium or low
-}]
-   and please don't generate anything else tather than the json file and also please refer the task titles when recommending actions to be taken  and also the action description doesn't need to surpass 2 or 3 lines and also calculate average and the number of actions to be taken depends on how many suggestions have been made and also remember to suggest creating subtasks if there is no subtask to the task potential time save must be either a whole number or a float and also when creating the action description don't use quatioation mark or any other symbols use html tags if necessary and also make it short as much as possible like i said don't use "" or ''
+},
+suggestions:[{
+id,
+title,
+suggestions,
+aiConfidenceScore,
+actionType,
+impactLevel,
+estimatedTime,
+aiInsight
+}]]
+   and please don't generate anything else tather than the json file and also please refer the task titles when recommending actions to be taken  and also the action description doesn't need to surpass 2 or 3 lines and also calculate average and the number of actions to be taken depends on how many suggestions  have been made and but it the suggestions have to be >=4 also remember to suggest creating subtasks if there is no subtask to the task potential time save must be either a whole number or a float and also when creating the action description don't use quatioation mark or any other symbols use html tags if necessary and also make it short as much as possible like i said don't use "" or ''
    `;
 
     const result = await model.generateContent(prompt);
@@ -67,32 +77,32 @@ export async function GET(req: NextRequest, res: NextResponse) {
     // console.log(responseText);
     // console.log(response.insights);
     console.log("Generating DeepSeek Response......");
-    const deepseekResponse = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+    // const deepseekResponse = await fetch(
+    //   "https://openrouter.ai/api/v1/chat/completions",
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
 
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "deepseek/deepseek-r1:free",
-          messages: [
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-        }),
-      }
-    );
-    const deepseekInsights = await deepseekResponse.json();
-    const message = deepseekInsights.choices[0].message;
-    const messageMatch = message.content.match(/\{[\s\S]*\}/);
-    console.log(messageMatch);
-    console.log("deepseek response", deepseekInsights);
-    console.log("deepseek message", JSON.parse(messageMatch[0]));
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       model: "deepseek/deepseek-r1:free",
+    //       messages: [
+    //         {
+    //           role: "user",
+    //           content: prompt,
+    //         },
+    //       ],
+    //     }),
+    //   }
+    // );
+    // const deepseekInsights = await deepseekResponse.json();
+    // const message = deepseekInsights.choices[0].message;
+    // const messageMatch = message.content.match(/\{[\s\S]*\}/);
+    // console.log(messageMatch);
+    // console.log("deepseek response", deepseekInsights);
+    // console.log("deepseek message", JSON.parse(messageMatch[0]));
 
     return NextResponse.json({ suggestions: response.insights, success: true });
   } catch (error) {
