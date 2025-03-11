@@ -1,5 +1,6 @@
 "use server";
 import { auth } from "@/lib/auth";
+import { authClient } from "@/lib/auth-client";
 import { generateTags } from "@/lib/gemini";
 import { headers } from "next/headers";
 import { json } from "stream/consumers";
@@ -65,5 +66,25 @@ export async function fetchTasklistDetail(workspaceId, tasklistId) {
     return { taskList: data.taskList };
   } catch (error) {
     return { error: error, message: "Could not fetch tasks" };
+  }
+}
+
+export async function getSingleTask(id) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  try {
+    const data = await fetch(`${process.env.BASE_URL}/api/tasks/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.session.token}`,
+      },
+      cache: "no-store",
+
+      credentials: "include",
+    });
+    const task = await data.json();
+    return { task: task };
+  } catch (error) {
+    return { error: error.message };
   }
 }
