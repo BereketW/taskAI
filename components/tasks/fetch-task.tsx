@@ -53,7 +53,7 @@ import { cn } from "@/lib/utils";
 import { format } from "path";
 import { Textarea } from "../ui/textarea";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { fetchTask } from "@/actions/tasks";
+import { fetchTask, updateTask } from "@/actions/tasks";
 import { Skeleton } from "../ui/skeleton";
 
 export default function TasksPage() {
@@ -68,6 +68,7 @@ export default function TasksPage() {
   const [isChecked, setIsChecked] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
   const [tasks, setTasks] = useState([]);
+  const [updateLoading, setUpdateLoading] = useState(false);
   useEffect(() => {
     async function getTasks() {
       setIsLoading(true);
@@ -170,6 +171,21 @@ export default function TasksPage() {
     console.log(formState);
     setIsEditDialogOpen(true);
   };
+
+  async function taskUpdate(e) {
+    e.preventDefault();
+    setUpdateLoading(true);
+    try {
+      const response = await updateTask({ ...formState, id: editingTask.id });
+
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+      setUpdateLoading(false);
+    } finally {
+      setUpdateLoading(false);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -705,10 +721,11 @@ export default function TasksPage() {
                 <Button
                   // onClick={handleSave}
                   // disabled={isSaving}
-                  className="relative overflow-hidden group"
+                  onClick={taskUpdate}
+                  className={`relative overflow-hidden group ${updateLoading && "opacity-50"}`}
                 >
                   <span className={cn("transition-all duration-300")}>
-                    Save Changes
+                    {updateLoading ? "Saving Changes..." : "Save Changes"}
                   </span>
                   {/* {isSaving && (
                     <div className="absolute inset-0 flex items-center justify-center">
