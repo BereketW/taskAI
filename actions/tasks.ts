@@ -88,3 +88,23 @@ export async function getSingleTask(id) {
     return { error: error.message };
   }
 }
+export async function updateTask(data) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  console.log("Passed Data: " + data);
+  try {
+    const response = await fetch(`${process.env.BASE_URL}/api/task/update`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.session.token}`,
+      },
+      body: JSON.stringify(data),
+      cache: "no-store",
+      credentials: "include",
+    });
+    const { updatedTask } = await response.json();
+    return { updatedTask: updatedTask };
+  } catch (error) {
+    return { error: error };
+  }
+}
