@@ -140,19 +140,21 @@ model TaskList {
 }
 
 model Task {
-  id           String        @id @default(uuid())
+  id           String            @id @default(uuid())
   title        String
   description  String?
-  list         TaskList      @relation(fields: [listId], references: [id])
+  list         TaskList          @relation(fields: [listId], references: [id])
   listId       String
-  assignedTo   User?         @relation(fields: [assignedToId], references: [id])
+  assignedTo   User?             @relation(fields: [assignedToId], references: [id])
   assignedToId String?
   dueDate      DateTime?
   dueTime      String
   priority     Priority
   status       TaskStatus
   comments     TaskComment[]
-
+  isCompleted  Boolean           @default(false)
+  completedAt  DateTime?
+  subtask      Subtask[]
   activityLogs TaskActivityLog[]
   reminders    Reminder[]
   category     String            @db.Text
@@ -193,6 +195,18 @@ model TaskActivityLog {
   timestamp DateTime       @default(now())
 }
 
+model Subtask {
+  id          String    @id @default(uuid())
+  task        Task      @relation(fields: [taskId], references: [id])
+  taskId      String
+  title       String
+  description String    @db.Text
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+}
+
 model Reminder {
   id           String         @id @default(uuid())
   task         Task           @relation(fields: [taskId], references: [id])
@@ -212,6 +226,28 @@ model TaskAttachment {
   uploadedBy   User     @relation(fields: [uploadedById], references: [id])
   uploadedById String
   createdAt    DateTime @default(now())
+}
+
+model AIInsight {
+  id                 String   @id @default(uuid())
+  createdAt          DateTime @default(now())
+  userId             String // Reference to the user
+  confidence         Float // AI confidence score (0-100)
+  potentialTime      Float // Estimated time saved (in hours)
+  activeCount        Int // Active suggestions count
+  implementationRate Float // Percentage of implemented suggestions
+  actions            Action[] // Relationship with actions
+}
+
+model Action {
+  id              String    @id @default(uuid())
+  aiInsightId     String
+  aiInsight       AIInsight @relation(fields: [aiInsightId], references: [id], onDelete: Cascade)
+  actionType      String // Action title
+  description     String? // Short description
+  impactLevel     String // "High", "Medium", "Low"
+  confidenceScore Int
+  estimatedTime   Int // Estimated time (in minutes)
 }
 
 /**
