@@ -26,7 +26,6 @@
 // import nodemailer from "nodemailer";
 // import { render } from "react-dom";
 import { Resend } from "resend";
-const resend = new Resend("re_4ffmShNX_DunFtmzMHjcvKKanYv1qtadw");
 export async function email(value) {
   try {
     resend.emails.send({
