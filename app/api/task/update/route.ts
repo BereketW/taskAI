@@ -1,7 +1,9 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import axios from "axios";
 // import { request } from "http";
 import { NextRequest, NextResponse } from "next/server";
+import { io } from "socket.io-client";
 
 export async function PUT(req: NextRequest, res: NextResponse) {
   console.log("PUT request received");
@@ -14,7 +16,7 @@ export async function PUT(req: NextRequest, res: NextResponse) {
 
   // Perform your database update operations here
   try {
-    const updateTask = await prisma.task.updateMany({
+    const updateTask = await prisma.task.update({
       where: { id },
       data: {
         title,
@@ -26,6 +28,8 @@ export async function PUT(req: NextRequest, res: NextResponse) {
       },
     });
     console.log(updateTask);
+    const socket = io("http://localhost:5000");
+    socket.emit("taskUpdated", updateTask);
     return NextResponse.json({ updateTask: updateTask }, { status: 200 });
   } catch (err) {
     console.error(err);

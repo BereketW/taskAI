@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req: NextRequest, res: NextResponse) {
   console.log("request received");
-  const { id } = await req.json();
+  const { id, status } = await req.json();
   const session = await auth.api.getSession({ headers: req.headers });
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -13,9 +13,9 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
     const updateTask = await prisma.task.update({
       where: { id },
       data: {
-        isCompleted: true,
+        isCompleted: status === "COMPLETED" ? false : true,
         completedAt: new Date().toISOString(),
-        status: "COMPLETED",
+        status: status === "PENDING" ? "COMPLETED" : "PENDING",
       },
     });
     console.log("Task updated successfully", updateTask);
