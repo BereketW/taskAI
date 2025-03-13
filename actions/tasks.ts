@@ -102,8 +102,8 @@ export async function updateTask(data) {
       cache: "no-store",
       credentials: "include",
     });
-    const { updatedTask } = await response.json();
-    return { updatedTask: updatedTask };
+    const { updateTask, status } = await response.json();
+    return { updatedTask: updateTask, status: status };
   } catch (error) {
     return { error: error };
   }
