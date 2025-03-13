@@ -8,6 +8,7 @@ import {
   CalendarIcon,
   Check,
   CheckCircle,
+  CheckIcon,
   Clock,
   Edit,
   Filter,
@@ -39,6 +40,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import toast, { Toaster } from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
@@ -70,6 +72,9 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
   const [updateLoading, setUpdateLoading] = useState(false);
   useEffect(() => {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
     async function getTasks() {
       setIsLoading(true);
       try {
@@ -84,14 +89,15 @@ export default function TasksPage() {
     getTasks();
   }, [isChecked]);
 
-  async function checkAsCompleted(id) {
+  async function checkAsCompleted(data) {
     try {
       const { response, status } = await fetch(`/api/task/completed`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ data }),
+        cache: "no-store",
       });
       console.log(response, status);
       if (status === 200) {
@@ -178,7 +184,19 @@ export default function TasksPage() {
     try {
       const response = await updateTask({ ...formState, id: editingTask.id });
 
-      console.log(response);
+      console.log("response", response.updatedTask, response.status);
+      if (response) {
+        toast.success("Task updated successfully");
+        setTimeout(() => {
+          setIsEditDialogOpen(false);
+          setIsChecked(true);
+        }, 2000);
+        if (Notification.permission === "granted") {
+          new Notification("Task Updated", {
+            body: `Updated: ${response.updatedTask.title}`,
+          });
+        }
+      }
     } catch (error) {
       console.log(error);
       setUpdateLoading(false);
@@ -307,9 +325,14 @@ export default function TasksPage() {
                       <div className="flex items-start gap-4">
                         <Checkbox
                           id={`task-${task.id}`}
-                          checked={task.status === "COMPLETED" || isChecked}
+                          checked={task.status === "COMPLETED"}
                           className="mt-1"
-                          onClick={() => checkAsCompleted(task.id)}
+                          onClick={() =>
+                            checkAsCompleted({
+                              id: task.id,
+                              status: task.status,
+                            })
+                          }
                         />
                         <div className="flex-1 space-y-1">
                           <div className="flex items-center gap-2">
@@ -480,6 +503,7 @@ export default function TasksPage() {
         </CardContent>
       </Card>
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <Toaster position="top-center" />
         <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden bg-background/95 backdrop-blur-xl border border-muted/30 shadow-lg">
           <div className="flex flex-col h-full">
             <DialogHeader className="px-6 pt-6 pb-2">
@@ -695,11 +719,14 @@ export default function TasksPage() {
                         <div>
                           <h4 className="text-sm font-medium">Task Status</h4>
                           <p className="text-xs text-muted-foreground mt-1">
-                            This task is currently in progress. Mark it as
-                            complete when finished.
+                            {editingTask?.status !== "COMPLETED"
+                              ? "This task is currently in progress. Mark it as complete when finished."
+                              : "This task is completed successfully"}
                           </p>
                           <Button variant="outline" size="sm" className="mt-2">
-                            Mark as Complete
+                            {editingTask?.status === "COMPLETED"
+                              ? "Mark as Pending"
+                              : " Mark as Complete"}
                           </Button>
                         </div>
                       </div>
