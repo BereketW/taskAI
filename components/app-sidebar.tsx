@@ -133,7 +133,7 @@ export function AppSidebar() {
         "flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br",
         color,
         "transition-transform duration-200 ease-in-out group-hover/button:scale-[0.95] group-hover/button:opacity-90",
-        "after:absolute after:inset-0 after:rounded-xl after:bg-white/20 after:opacity-0 after:transition-opacity group-hover/button:after:opacity-100"
+        "after:absolute after:inset-0 after:rounded-xl after:bg-background/20 after:opacity-0 after:transition-opacity group-hover/button:after:opacity-100"
       )}
     >
       {children}
@@ -148,8 +148,8 @@ export function AppSidebar() {
       disableTransitionOnChange
     >
       <SidebarProvider>
-        <Sidebar className="border-r border-[#f0f0f5] bg-[#fafafa]/70 backdrop-blur-xl">
-          <SidebarHeader className="border-b border-[#f0f0f5] px-2 py-4">
+        <Sidebar className="border-r border-border bg-background/70 backdrop-blur-xl">
+          <SidebarHeader className="border-b border-border px-2 py-4">
             <Link href="/dashboard" className="flex items-center gap-2 px-4">
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80">
                 <CheckSquare className="h-5 w-5 text-primary-foreground" />
@@ -166,7 +166,7 @@ export function AppSidebar() {
           </SidebarHeader>
           <SidebarContent className="px-2 py-4">
             <SidebarGroup>
-              <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground/70">
+              <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground">
                 MAIN MENU
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -195,7 +195,7 @@ export function AppSidebar() {
             </SidebarGroup>
             <SidebarSeparator className="my-4" />
             <SidebarGroup>
-              <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground/70">
+              <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground">
                 WORKSPACE
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -224,7 +224,7 @@ export function AppSidebar() {
             </SidebarGroup>
             <SidebarSeparator className="my-4" />
             <SidebarGroup>
-              <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground/70">
+              <SidebarGroupLabel className="px-4 text-xs font-medium text-muted-foreground">
                 AI FEATURES
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -259,7 +259,7 @@ export function AppSidebar() {
               </SidebarGroupContent>
             </SidebarGroup>
           </SidebarContent>
-          <SidebarFooter className="border-t border-[#f0f0f5] p-4">
+          <SidebarFooter className="border-t border-border p-4">
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
