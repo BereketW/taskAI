@@ -5,7 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Github, Loader2 } from "lucide-react";
+import { ArrowRight, Github, Loader2, EyeIcon, EyeOffIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,32 +24,26 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const handleGithubLogin = async (e: React.FormEvent) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleGithubLogin = async (e: React.MouseEvent) => {
     e.preventDefault();
     setIsLoading(true);
     const { data, error } = await authClient.signIn.social({
       provider: "github",
       callbackURL: "/dashboard",
     });
-    // Simulate API call
-    // setTimeout(() => {
-    //   setIsLoading(false)
-    //   window.location.href = "/dashboard"
-    // }, 1500)
   };
-  const handleGoogleLogin = async (e: React.FormEvent) => {
+
+  const handleGoogleLogin = async (e: React.MouseEvent) => {
     e.preventDefault();
     setIsLoading(true);
     const { data, error } = await authClient.signIn.social({
       provider: "google",
       callbackURL: "/dashboard",
     });
-    // Simulate API call
-    // setTimeout(() => {
-    //   setIsLoading(false)
-    //   window.location.href = "/dashboard"
-    // }, 1500)
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -62,11 +56,8 @@ export default function SignInPage() {
       {
         onSuccess: (ctx) => {
           setIsLoading(false);
-          const authToken = ctx.response.headers.get("set-auth-token"); // get the token from the response headers
-          // Store the token securely (e.g., in localStorage)
+          const authToken = ctx.response.headers.get("set-auth-token");
           localStorage.setItem("bearer_token", authToken);
-          console.log(ctx);
-
           window.location.href = "/dashboard";
         },
         onError: (response) => {
@@ -75,48 +66,75 @@ export default function SignInPage() {
             window.location.href = "/email-not-verified";
           }
         },
-        onRequest: (response) => {
+        onRequest: () => {
           setIsLoading(true);
         },
       }
     );
-    // Simulate API call
-    // setTimeout(() => {
-    //   setIsLoading(false)
-    //   window.location.href = "/dashboard"
-    // }, 1500)
   };
 
   return (
-    <div className="w-full max-w-md">
+    <div className="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-secondary/[0.05] blur-3xl" />
+
+      {/* Decorative shapes */}
+      <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-primary/[0.03] filter blur-[80px]" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-secondary/[0.03] filter blur-[80px]" />
+
+      {/* Dot pattern overlay */}
+      <div className="absolute inset-0 dot-pattern opacity-20" />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        className="w-full max-w-md z-10"
       >
-        <Card className="backdrop-blur-lg bg-white/10 dark:bg-gray-950/30 border-muted/40">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
-            <CardDescription>
-              Enter your email and password to access your account
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center gap-2 mb-8">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
+              <div className="h-5 w-5 rounded-full bg-primary" />
+            </div>
+            <span className="text-2xl font-semibold">
+              Task
+              <span className="font-pacifico bg-clip-text text-transparent bg-gradient-to-r from-primary via-white/90 to-secondary">
+                AI
+              </span>
+            </span>
+          </Link>
+
+          <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/80">
+            Welcome Back
+          </h1>
+          <p className="text-white/60">Sign in to your account to continue</p>
+        </div>
+
+        <Card className="border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-xl">
+          <CardHeader className="space-y-1 pb-2">
+            <CardTitle className="text-xl text-center">Sign In</CardTitle>
+            <CardDescription className="text-center text-white/60">
+              Enter your credentials to access your account
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
+            <div className="grid grid-cols-2 gap-4">
               <Button
                 onClick={handleGithubLogin}
                 variant="outline"
-                className="w-full"
+                className="w-full border-white/10 bg-white/5 hover:bg-white/10 text-white"
                 type="button"
+                disabled={isLoading}
               >
                 <Github className="mr-2 h-4 w-4" />
-                Continue with Github
+                GitHub
               </Button>
               <Button
                 onClick={handleGoogleLogin}
                 variant="outline"
-                className="w-full"
+                className="w-full border-white/10 bg-white/5 hover:bg-white/10 text-white"
                 type="button"
+                disabled={isLoading}
               >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                   <path
@@ -137,50 +155,91 @@ export default function SignInPage() {
                   />
                   <path d="M1 1h22v22H1z" fill="none" />
                 </svg>
-                Continue with Google
+                Google
               </Button>
             </div>
+
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+                <span className="w-full border-t border-white/10" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-card px-2 text-white/40">
+                  Or continue with email
                 </span>
               </div>
             </div>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-white/80">
+                  Email
+                </Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="name@example.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="bg-white/5 border-white/10 focus:border-white/20"
                 />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-white/80">
+                    Password
+                  </Label>
                   <Link
                     href="/forgot-password"
-                    className="text-xs text-primary hover:underline"
+                    className="text-xs text-primary hover:text-primary/80 hover:underline"
                   >
                     Forgot password?
                   </Link>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="bg-white/5 border-white/10 focus:border-white/20 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOffIcon className="h-4 w-4" />
+                    ) : (
+                      <EyeIcon className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
-              <Button className="w-full" type="submit" disabled={isLoading}>
+
+              <div className="flex items-center space-x-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="remember"
+                  className="h-4 w-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/80"
+                />
+                <Label
+                  htmlFor="remember"
+                  className="text-sm font-medium text-white/70"
+                >
+                  Remember me for 30 days
+                </Label>
+              </div>
+
+              <Button
+                className="w-full rounded-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity text-white mt-2"
+                type="submit"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -195,13 +254,32 @@ export default function SignInPage() {
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <div className="text-sm text-center text-muted-foreground">
+          <CardFooter className="flex flex-col space-y-4 pt-0 pb-6">
+            <div className="text-sm text-center text-white/60">
               Don&apos;t have an account?{" "}
-              <Link href="/sign-up" className="text-primary hover:underline">
-                Sign up
+              <Link
+                href="/sign-up"
+                className="text-primary hover:text-primary/80 hover:underline font-medium"
+              >
+                Create an account
               </Link>
             </div>
+            <p className="text-xs text-center text-white/40 max-w-xs mx-auto">
+              By continuing, you agree to our{" "}
+              <Link
+                href="/terms"
+                className="underline underline-offset-2 hover:text-white/60"
+              >
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link
+                href="/privacy"
+                className="underline underline-offset-2 hover:text-white/60"
+              >
+                Privacy Policy
+              </Link>
+            </p>
           </CardFooter>
         </Card>
       </motion.div>
