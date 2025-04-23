@@ -92,18 +92,6 @@ export default function SignInPage() {
         className="w-full max-w-md z-10"
       >
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
-              <div className="h-5 w-5 rounded-full bg-primary" />
-            </div>
-            <span className="text-2xl font-semibold">
-              Task
-              <span className="font-pacifico bg-clip-text text-transparent bg-gradient-to-r from-primary via-white/90 to-secondary">
-                AI
-              </span>
-            </span>
-          </Link>
-
           <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/80">
             Welcome Back
           </h1>
