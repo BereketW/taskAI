@@ -151,17 +151,15 @@ export function AppSidebar() {
         <Sidebar className="border-r border-border bg-background/70 backdrop-blur-xl">
           <SidebarHeader className="border-b border-border px-2 py-4">
             <Link href="/dashboard" className="flex items-center gap-2 px-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80">
-                <CheckSquare className="h-5 w-5 text-primary-foreground" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
+                <div className="h-4 w-4 rounded-full bg-gradient-to-r from-indigo-300 to-rose-300" />
               </div>
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2 }}
-                className="flex-1 text-lg font-semibold"
-              >
-                TaskAI
-              </motion.div>
+              <span className="text-lg font-semibold text-white">
+                Task
+                <span className="font-pacifico bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-white/90 to-rose-300">
+                  AI
+                </span>
+              </span>
             </Link>
           </SidebarHeader>
           <SidebarContent className="px-2 py-4">
