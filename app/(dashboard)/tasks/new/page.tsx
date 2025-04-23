@@ -337,16 +337,25 @@ export default function NewTaskPage() {
                       <SelectValue placeholder="Select workspace" />
                     </SelectTrigger>
                     <SelectContent>
-                      {workspaces.map((workspace) => (
-                        <SelectItem key={workspace.id} value={workspace.id}>
-                          {workspace.name}
-                        </SelectItem>
-                      ))}
+                      {workspaces &&
+                        workspaces.map((workspace) => (
+                          <SelectItem key={workspace.id} value={workspace.id}>
+                            {isLoading ? "Loading..." : workspace.name}
+                          </SelectItem>
+                        ))}
+                      {workspaces.length === 0 && (
+                        <Link
+                          href={"/workspaces/new"}
+                          className="flex items-center justify-center py-2 bg-white rounded text-black"
+                        >
+                          Create New Workspace
+                        </Link>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 overflow-hidden">
                   <Label>Tasklist</Label>
                   <Select
                     value={selectedTasklist}
@@ -362,6 +371,14 @@ export default function NewTaskPage() {
                           {tasklist.name}
                         </SelectItem>
                       ))}
+                      {selectedWorkspaceData?.taskLists?.length === 0 && (
+                        <Link
+                          href={`/workspaces/${selectedWorkspaceData.id}/tasklists/new`}
+                          className="flex items-start justify-center py-2 bg-white rounded text-black"
+                        >
+                          Create New TaskList
+                        </Link>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
