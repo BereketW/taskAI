@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { NotificationProvider } from "@/components/ui/notification-bar";
+import SmoothScrolling from "@/components/smooth-scrolling";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,10 +35,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <NotificationProvider>
-            <div className="relative min-h-screen">
-              {children}
-              <Toaster />
-            </div>
+            <SmoothScrolling>
+              <div className="relative min-h-screen">
+                {children}
+                <Toaster />
+              </div>
+            </SmoothScrolling>
           </NotificationProvider>
         </ThemeProvider>
       </body>
