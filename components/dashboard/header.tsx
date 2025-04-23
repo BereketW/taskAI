@@ -89,6 +89,7 @@ export function DashboardHeader() {
 
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   useEffect(() => {
@@ -216,10 +217,15 @@ export function DashboardHeader() {
             <SheetContent side="left" className="w-[300px] sm:w-[400px]">
               <div className="flex flex-col gap-6 py-6">
                 <Link href="/dashboard" className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
-                    <CheckSquare className="h-5 w-5 text-primary-foreground" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
+                    <div className="h-4 w-4 rounded-full bg-gradient-to-r from-indigo-300 to-rose-300" />
                   </div>
-                  <span className="text-lg font-semibold">TaskAI</span>
+                  <span className="text-lg font-semibold text-white">
+                    Task
+                    <span className="font-pacifico bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-white/90 to-rose-300">
+                      AI
+                    </span>
+                  </span>
                 </Link>
                 {/* Mobile navigation will be rendered here */}
               </div>
@@ -353,7 +359,7 @@ export function DashboardHeader() {
                           No notifications
                         </h3>
                         <p className="mt-2 text-xs text-muted-foreground px-4">
-                          When you have notifications, they'll appear here.
+                          When you have notifications, {"they'll"} appear here.
                         </p>
                       </div>
                     )}
@@ -381,8 +387,8 @@ export function DashboardHeader() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder-user.jpg" alt="User" />
-                  <AvatarFallback>U</AvatarFallback>
+                  <AvatarImage src={session?.user.image} alt="User" />
+                  <AvatarFallback>{session?.user.name[0]}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
