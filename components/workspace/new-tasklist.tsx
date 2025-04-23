@@ -58,7 +58,7 @@ export default function NewTasklistPage({ id }) {
   };
 
   return (
-    <div className="container max-w-xl py-8">
+    <div className="container m-auto max-w-xl py-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
