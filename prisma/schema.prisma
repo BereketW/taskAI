@@ -37,9 +37,52 @@ model User {
   Reminder        Reminder[]
   TaskAttachment  TaskAttachment[]
   Notification    Notification[]
+  Onboarding      Onboarding?
 
   @@unique([email])
   @@map("user")
+}
+
+model Onboarding {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // --- Link back to the User (One-to-One relationship) ---
+  userId String @unique // Foreign key referencing the User, @unique enforces 1-to-1
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation definition, deletes onboarding if user is deleted
+
+  // --- Onboarding Data Fields (Moved from User model) ---
+
+  // Step 1 - Personal/Company Info
+  jobTitle   String?
+  company    String?
+  roleInTeam RoleInTeam? @default(TEAM_MEMBER)
+
+  // Step 2 - Team & Collaboration
+  teamSize        TeamSize?
+  workStyle       WorkStyle? @default(HYBRID)
+  primaryWorkType String?
+
+  // Step 3 - Task Management Preferences
+  biggestChallenge  String?
+  preferredView     TaskView? @default(LIST)
+  currentTools      String[]
+  productivityPeaks String[]
+
+  // Step 4 - Integrations Preference
+  calendarIntegration CalendarProvider?
+  communicationTool   CommTool?
+  fileStorage         FileStorageProvider?
+
+  // Step 5 - AI Features & Goals
+  aiFeatures        String[] @default(["suggestions", "prioritization", "insights"])
+  aiAssistanceAreas String[]
+  primaryGoal       String?
+
+  // Onboarding status tracking
+  lastCompletedStep Int?    @default(0) // Last completed step number (e.g., 0 means none, 1 means step 1 done)
+  completed         Boolean @default(false) // Flag indicating if the entire onboarding flow is finished
 }
 
 model Session {
@@ -352,4 +395,53 @@ enum NotificationType {
   MENTION
   REMINDER
   SYSTEM
+}
+
+enum RoleInTeam {
+  TEAM_MEMBER
+  TEAM_LEAD
+  MANAGER
+  SOLO_USER
+  OTHER
+}
+
+enum TeamSize {
+  JUST_ME
+  S_2_5
+  S_6_10
+  S_11_25
+  S_26_PLUS
+}
+
+enum WorkStyle {
+  REMOTE
+  IN_OFFICE
+  HYBRID
+}
+
+enum TaskView {
+  LIST
+  BOARD // Kanban style
+  CALENDAR
+}
+
+enum CalendarProvider {
+  GOOGLE
+  OUTLOOK
+  APPLE
+  NONE
+}
+
+enum CommTool {
+  SLACK
+  TEAMS
+  DISCORD
+  NONE
+}
+
+enum FileStorageProvider {
+  GDRIVE
+  DROPBOX
+  ONEDRIVE
+  NONE
 }
