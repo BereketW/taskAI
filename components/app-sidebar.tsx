@@ -2,17 +2,16 @@
 
 import type React from "react";
 
-import { motion } from "framer-motion";
 import {
   BarChart3,
   Calendar,
-  CheckSquare,
   Clock,
   Compass,
   Flag,
   FolderKanban,
   LayoutDashboard,
   ListTodo,
+  LogOut,
   Settings,
   Sparkles,
   Users,
@@ -178,7 +177,7 @@ export function AppSidebar() {
                       >
                         <Link href={item.href}>
                           <IconWrapper color={item.color}>
-                            <item.icon className="h-5 w-5 text-white" />
+                            <item.icon className="h-4 w-4 text-white" />
                           </IconWrapper>
                           <span>{item.title}</span>
                         </Link>
@@ -207,7 +206,7 @@ export function AppSidebar() {
                       >
                         <Link href={item.href}>
                           <IconWrapper color={item.color}>
-                            <item.icon className="h-5 w-5 text-white" />
+                            <item.icon className="h-4 w-4 text-white" />
                           </IconWrapper>
                           <span>{item.title}</span>
                         </Link>
@@ -236,7 +235,7 @@ export function AppSidebar() {
                       >
                         <Link href={item.href}>
                           <IconWrapper color={item.color}>
-                            <item.icon className="h-5 w-5 text-white" />
+                            <item.icon className="h-4 w-4 text-white" />
                           </IconWrapper>
                           <span>{item.title}</span>
                         </Link>
@@ -267,9 +266,23 @@ export function AppSidebar() {
                 >
                   <Link href="/settings">
                     <IconWrapper color="from-gray-600 to-gray-700">
-                      <Settings className="h-5 w-5 text-white" />
+                      <Settings className="h-4 w-4 text-white" />
                     </IconWrapper>
                     <span>Settings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  variant="outline"
+                  className="group/button relative px-4"
+                >
+                  <Link href="/settings">
+                    <IconWrapper color="from-red-600 to-red-700">
+                      <LogOut className="h-4 w-4 text-white" />
+                    </IconWrapper>
+                    <span>Logout</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
