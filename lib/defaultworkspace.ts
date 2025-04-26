@@ -1,6 +1,6 @@
 "use server";
-import { headers } from "next/headers";
-import { auth } from "./auth";
+// import { headers } from "next/headers";
+// import { auth } from "./auth";
 import { prisma } from "./prisma";
 
 export async function createDefaultWorkspace(id: string) {
@@ -12,6 +12,7 @@ export async function createDefaultWorkspace(id: string) {
       visibility: "PRIVATE",
     },
   });
+  return data;
 }
 
 export async function createDefaultTaskList(id: string) {
@@ -22,4 +23,5 @@ export async function createDefaultTaskList(id: string) {
       createdById: id,
     },
   });
+  return data;
 }

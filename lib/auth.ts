@@ -2,10 +2,8 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { PrismaClient } from "@prisma/client";
 import { bearer } from "better-auth/plugins";
-import { Resend } from "resend";
 import nodemailer from "nodemailer";
 // import { email } from "@/actions/send-email";
-const resend = new Resend("re_4ffmShNX_DunFtmzMHjcvKKanYv1qtadw");
 
 async function email(data) {
   const transporter = nodemailer.createTransport({
@@ -43,7 +41,7 @@ export const auth = betterAuth({
     requireEmailVerification: true,
 
     autoSignIn: false,
-    sendResetPassword: async ({ user, url, token }, request) => {
+    sendResetPassword: async ({ user, url }) => {
       await email({
         email: user.email,
         subject: "Reset your password",
@@ -63,6 +61,10 @@ export const auth = betterAuth({
   //   updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
   // },
   session: {
+    session: {
+      expiresIn: 60 * 60 * 24 * 7, // 7 days
+      updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
+    },
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60, // Cache duration in seconds
@@ -71,7 +73,7 @@ export const auth = betterAuth({
 
   emailVerification: {
     sendOnSignUp: true,
-    sendVerificationEmail: async ({ user, url }, request) => {
+    sendVerificationEmail: async ({ user, url }) => {
       await email({
         email: user.email,
         url: url,
@@ -87,8 +89,8 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     },
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     },
   },
 });
