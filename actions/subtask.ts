@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-export async function generateSubtask({ data }) {
+export async function generateSubtask({ data }: any) {
   try {
     // const { title, description } = await req.json();
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY || "");
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
@@ -16,10 +17,7 @@ export async function generateSubtask({ data }) {
     const responseText = result.response.text();
 
     return Response.json(JSON.parse(responseText));
-  } catch (error) {
-    return Response.json(
-      { error: "Failed to generate subtasks" },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    return Response.json({ error: error.message }, { status: 500 });
   }
 }

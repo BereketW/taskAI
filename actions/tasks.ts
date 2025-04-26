@@ -1,9 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { auth } from "@/lib/auth";
-import { authClient } from "@/lib/auth-client";
 import { generateTags } from "@/lib/gemini";
 import { headers } from "next/headers";
-import { json } from "stream/consumers";
 
 export async function fetchTask() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -20,7 +19,7 @@ export async function fetchTask() {
     const data = await tasks.json();
     console.log(data);
     const tasksWithTags = await Promise.all(
-      data.tasks.map(async (task) => {
+      data.tasks.map(async (task: { title: string; description: string }) => {
         console.log(`🎯 Generating tags for task: ${task.title}`);
         const tags = await generateTags(task.title, task.description);
         console.log(`🏷 Tags generated:`, tags);
@@ -34,7 +33,10 @@ export async function fetchTask() {
   }
 }
 
-export async function fetchTasklistDetail(workspaceId, tasklistId) {
+export async function fetchTasklistDetail(
+  workspaceId: string,
+  tasklistId: string
+) {
   const session = await auth.api.getSession({ headers: await headers() });
   try {
     const tasks = await fetch(
@@ -69,7 +71,7 @@ export async function fetchTasklistDetail(workspaceId, tasklistId) {
   }
 }
 
-export async function getSingleTask(id) {
+export async function getSingleTask(id: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   try {
     const data = await fetch(`${process.env.BASE_URL}/api/tasks/${id}`, {
@@ -84,11 +86,11 @@ export async function getSingleTask(id) {
     });
     const task = await data.json();
     return { task: task };
-  } catch (error) {
+  } catch (error: any) {
     return { error: error.message };
   }
 }
-export async function updateTask(data) {
+export async function updateTask(data: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   console.log("Passed Data: " + data);
   try {

@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import { headers } from "next/headers";
 
 // export async function generateInsights({ data }) {

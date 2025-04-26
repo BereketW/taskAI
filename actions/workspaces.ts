@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { auth } from "@/lib/auth";
@@ -23,7 +24,7 @@ export async function getAllWorkspaces() {
   }
 }
 
-export async function getSingleWorkspace(id) {
+export async function getSingleWorkspace(id: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   console.log(session);
   try {
@@ -48,7 +49,11 @@ export async function getSingleWorkspace(id) {
   }
 }
 
-export async function createTaskList(data) {
+export async function createTaskList(data: {
+  name: string;
+  description: string;
+  id: any;
+}) {
   const session = await auth.api.getSession({ headers: await headers() });
   try {
     const taskList = await fetch(process.env.BASE_URL + "/api/tasklist", {
@@ -63,13 +68,24 @@ export async function createTaskList(data) {
     });
     const response = await taskList.json();
     return { response };
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     return { error: err.message, message: "Could not create task list" };
   }
 }
 
-export async function createTask(data) {
+export async function createTask(data: {
+  title: string;
+  description: string;
+  category: string;
+  recurring: boolean;
+  dueDate: Date | undefined;
+  dueTime: string;
+  priority: string;
+  selectedWorkspace: never;
+  selectedTasklist: string;
+  subtasks: { title: any; completed: boolean }[];
+}) {
   const session = await auth.api.getSession({ headers: await headers() });
   try {
     const task = await fetch(process.env.BASE_URL + "/api/task", {
@@ -84,7 +100,7 @@ export async function createTask(data) {
     });
     const response = await task.json();
     return { response };
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     return { error: err.message, message: "Could not create task" };
   }
@@ -108,7 +124,7 @@ export async function defaultWorkspace() {
     );
     const response = await taskList.json();
     return { response };
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     return { error: err.message, message: "Could not create task list" };
   }
