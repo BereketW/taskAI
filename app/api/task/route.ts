@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Ensure Prisma is set up
 // import { getServerSession } from "next-auth"; // Ensure authentication
-import { GoogleGenerativeAI } from "@google/generative-ai"; // Install gemini npm package
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+// import { headers } from "next/headers";
 import { generateTags } from "@/lib/gemini";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!); // Ensure you have the API key
 
 export async function POST(req: Request) {
   const {
@@ -17,7 +14,6 @@ export async function POST(req: Request) {
     selectedTasklist,
     dueDate,
     dueTime,
-    recurring,
   } = await req.json();
   try {
     // const session = await getServerSession();
@@ -56,54 +52,46 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: NextRequest) {
-  try {
-    console.log("🔍 Incoming request to fetch tasks...");
+  console.log("🔍 Incoming request to fetch tasks...");
 
-    // ✅ 1. Ensure authentication
-    const session = await auth.api.getSession({ headers: req.headers });
-    if (!session) {
-      console.error("❌ Unauthorized request - No session found!");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    console.log(`✅ User authenticated: ${userId}`);
-
-    // ✅ 2. Fetch tasks from the database
-    const tasks = await prisma.task.findMany({
-      where: { assignedToId: userId },
-      include: {
-        list: true,
-        comments: true,
-        attachments: true,
-        reminders: true,
-      },
-    });
-
-    console.log(`📦 Retrieved ${tasks.length} tasks from database.`);
-
-    // ✅ 3. Generate AI-based tags dynamically
-    const tasksWithTags = await Promise.all(
-      tasks.map(async (task) => {
-        console.log(`🎯 Generating tags for task: ${task.title}`);
-        const tags = await generateTags(task.title, task.description);
-
-        console.log(`🏷 Tags generated:`, tags);
-
-        return { ...task, tags };
-      })
-    );
-    console.log("tasksWith", tasksWithTags);
-
-    return NextResponse.json(
-      { success: true, tasks: tasksWithTags },
-      { status: 200 }
-    );
-  } catch (err) {
-    console.error("❌ Error fetching tasks:", err);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+  // ✅ 1. Ensure authentication
+  const session = await auth.api.getSession({ headers: req.headers });
+  if (!session) {
+    console.error("❌ Unauthorized request - No session found!");
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const userId = session.user.id;
+  console.log(`✅ User authenticated: ${userId}`);
+
+  // ✅ 2. Fetch tasks from the database
+  const tasks = await prisma.task.findMany({
+    where: { assignedToId: userId },
+    include: {
+      list: true,
+      comments: true,
+      attachments: true,
+      reminders: true,
+    },
+  });
+
+  console.log(`📦 Retrieved ${tasks.length} tasks from database.`);
+
+  // ✅ 3. Generate AI-based tags dynamically
+  const tasksWithTags = await Promise.all(
+    tasks.map(async (task) => {
+      console.log(`🎯 Generating tags for task: ${task.title}`);
+      const tags = await generateTags(task.title, task?.description || "");
+
+      console.log(`🏷 Tags generated:`, tags);
+
+      return { ...task, tags };
+    })
+  );
+  console.log("tasksWith", tasksWithTags);
+
+  return NextResponse.json(
+    { success: true, tasks: tasksWithTags },
+    { status: 200 }
+  );
 }

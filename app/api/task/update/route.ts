@@ -1,11 +1,11 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import axios from "axios";
+// import axios from "axios";
 // import { request } from "http";
 import { NextRequest, NextResponse } from "next/server";
 import { io } from "socket.io-client";
 
-export async function PUT(req: NextRequest, res: NextResponse) {
+export async function PUT(req: NextRequest) {
   console.log("PUT request received");
   const { id, title, description, status, priority, dueDate, time } =
     await req.json();
@@ -30,6 +30,7 @@ export async function PUT(req: NextRequest, res: NextResponse) {
     console.log(updateTask);
     const socket = io("http://localhost:5000");
     socket.emit("taskUpdated", updateTask);
+
     return NextResponse.json({ updateTask: updateTask }, { status: 200 });
   } catch (err) {
     console.error(err);

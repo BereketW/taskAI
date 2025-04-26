@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Ensure Prisma is set up
 // import { getServerSession } from "next-auth"; // Ensure authentication
-import { GoogleGenerativeAI } from "@google/generative-ai"; // Install gemini npm package
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { generateTags } from "@/lib/gemini";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!); // Ensure you have the API key
 
 export async function POST(req: Request) {
   const {
@@ -17,7 +13,6 @@ export async function POST(req: Request) {
     selectedTasklist,
     dueDate,
     dueTime,
-    recurring,
   } = await req.json();
   try {
     // const session = await getServerSession();
@@ -86,7 +81,7 @@ export async function GET(req: NextRequest) {
     const tasksWithTags = await Promise.all(
       tasks.map(async (task) => {
         console.log(`🎯 Generating tags for task: ${task.title}`);
-        const tags = await generateTags(task.title, task.description);
+        const tags = await generateTags(task.title, task.description || "");
 
         console.log(`🏷 Tags generated:`, tags);
 

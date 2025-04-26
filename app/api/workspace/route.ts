@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Ensure Prisma is set up
 // import { getServerSession } from "next-auth"; // Ensure authentication
 // import { GoogleGenerativeAI } from "@google/generative-ai"; // Install gemini npm package
