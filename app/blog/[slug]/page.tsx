@@ -77,7 +77,7 @@ const blogPost = {
   ],
 };
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
+export default function BlogPostPage() {
   return (
     <div className="min-h-screen pb-12">
       {/* Hero Section */}

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertCircle,
@@ -15,14 +16,14 @@ import {
   CalendarIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { format, isSameDay, parseISO, addDays } from "date-fns";
+import { format, isSameDay, parseISO } from "date-fns";
 import { createRoot } from "react-dom/client";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import ReactDOM from "react-dom";
+import type { EventClickArg, DatesSetArg } from "@fullcalendar/core";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -75,121 +76,28 @@ interface Task {
   };
 }
 
-// Async function to fetch tasks from the database
-// async function fetchTasks() {
-//   try {
-//     // In a real app, this would be an API call to your database
-//     // For now, we'll return mock data
-//     await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+// Define optimization type
+interface BreakSuggestion {
+  time: string;
+  duration: string;
+}
 
-//     const today = new Date();
-//     const tomorrow = addDays(today, 1);
-//     const nextWeek = addDays(today, 7);
-
-//     const tasks: Task[] = [
-//       {
-//         id: "t1",
-//         title: "Complete project documentation",
-//         description:
-//           "Write technical documentation for the new feature implementation",
-//         priority: "high",
-//         dueDate: today.toISOString(),
-//         dueTime: "14:00",
-//         status: "in-progress",
-//         category: "Work",
-//         assignee: {
-//           name: "John Doe",
-//           avatar: "/placeholder.svg?height=32&width=32",
-//         },
-//       },
-//       {
-//         id: "t2",
-//         title: "Review pull requests",
-//         description: "Review and provide feedback on team pull requests",
-//         priority: "high",
-//         dueDate: today.toISOString(),
-//         dueTime: "17:00",
-//         status: "todo",
-//         category: "Work",
-//       },
-//       {
-//         id: "t3",
-//         title: "Weekly team meeting",
-//         description: "Discuss project progress and roadblocks",
-//         priority: "medium",
-//         dueDate: tomorrow.toISOString(),
-//         dueTime: "10:00",
-//         status: "todo",
-//         category: "Work",
-//         assignee: {
-//           name: "Sarah Johnson",
-//           avatar: "/placeholder.svg?height=32&width=32",
-//         },
-//       },
-//       {
-//         id: "t4",
-//         title: "Prepare presentation",
-//         description: "Create slides for the client meeting",
-//         priority: "medium",
-//         dueDate: tomorrow.toISOString(),
-//         dueTime: "14:00",
-//         status: "todo",
-//         category: "Work",
-//       },
-//       {
-//         id: "t5",
-//         title: "Gym workout",
-//         description: "30 minutes cardio and strength training",
-//         priority: "low",
-//         dueDate: today.toISOString(),
-//         dueTime: "18:00",
-//         status: "completed",
-//         category: "Personal",
-//       },
-//       {
-//         id: "t6",
-//         title: "Design review",
-//         description: "Review new UI components",
-//         priority: "medium",
-//         dueDate: addDays(today, 2).toISOString(),
-//         dueTime: "11:00",
-//         status: "todo",
-//         category: "Design",
-//       },
-//       {
-//         id: "t7",
-//         title: "Quarterly planning",
-//         description: "Plan objectives for the next quarter",
-//         priority: "high",
-//         dueDate: addDays(today, 3).toISOString(),
-//         dueTime: "09:00",
-//         status: "todo",
-//         category: "Planning",
-//         assignee: {
-//           name: "Michael Chen",
-//           avatar: "/placeholder.svg?height=32&width=32",
-//         },
-//       },
-//       {
-//         id: "t8",
-//         title: "Update portfolio",
-//         description: "Add recent projects to portfolio",
-//         priority: "low",
-//         dueDate: nextWeek.toISOString(),
-//         status: "todo",
-//         category: "Personal",
-//       },
-//     ];
-
-//     return { tasks };
-//   } catch (error) {
-//     console.error("Error fetching tasks:", error);
-//     throw error;
-//   }
-// }
+interface Optimization {
+  optimalWorkHours: {
+    start: string;
+    end: string;
+    reason: string;
+  };
+  taskDistribution: {
+    overloaded: boolean;
+    suggestion: string;
+  };
+  breakSuggestions: BreakSuggestion[];
+  focusTips: string[];
+}
 
 // Function to get AI schedule optimization
-async function getAIOptimization(tasks: Task[], date: Date) {
+async function getAIOptimization(tasks: Task[]): Promise<Optimization> {
   try {
     // In a real app, this would call an API endpoint that uses Gemini
     // For now, we'll simulate a response
@@ -227,10 +135,13 @@ async function getAIOptimization(tasks: Task[], date: Date) {
 function getPriorityColor(priority: string): string {
   switch (priority) {
     case "HIGH":
+    case "high":
       return "#ef4444"; // text-red-500
     case "MEDIUM":
+    case "medium":
       return "#f59e0b"; // text-amber-500
     case "LOW":
+    case "low":
       return "#10b981"; // text-emerald-500
     default:
       return "#6b7280"; // text-gray-500
@@ -268,10 +179,10 @@ export default function CalendarPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [optimization, setOptimization] = useState<any>(null);
+  const [optimization, setOptimization] = useState<Optimization | null>(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [calendarRef, setCalendarRef] = useState<any>(null);
+  const calendarRef = useRef<FullCalendar | null>(null);
 
   // Fetch tasks on component mount
   useEffect(() => {
@@ -281,8 +192,9 @@ export default function CalendarPage() {
         const { tasks } = await fetchTask();
         setTasks(tasks);
         setError(null);
-      } catch (err) {
-        setError("Failed to load tasks. Please try again.");
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        setError("Error:" + errorMessage);
         toast({
           variant: "destructive",
           title: "Error loading tasks",
@@ -303,7 +215,7 @@ export default function CalendarPage() {
 
       try {
         setIsOptimizing(true);
-        const optimizationData = await getAIOptimization(tasks, date);
+        const optimizationData = await getAIOptimization(tasks);
         setOptimization(optimizationData);
       } catch (err) {
         console.error("Failed to get AI optimization:", err);
@@ -348,24 +260,27 @@ export default function CalendarPage() {
       });
 
       // In a real app, this would update the tasks with new times
+      return null;
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
       toast({
         variant: "destructive",
         title: "Optimization failed",
         description: "Please try again later.",
       });
+      return errorMessage;
     } finally {
       setIsOptimizing(false);
     }
   };
 
   // Handle calendar date change
-  const handleDateChange = (info: any) => {
+  const handleDateChange = (info: DatesSetArg) => {
     setDate(info.start || new Date());
   };
 
   // Handle calendar event click
-  const handleEventClick = (info: any) => {
+  const handleEventClick = (info: EventClickArg) => {
     const taskId = info.event.id;
     const task = tasks.find((t) => t.id === taskId);
     if (task) {
@@ -374,14 +289,16 @@ export default function CalendarPage() {
   };
 
   // Handle calendar view change
-  const handleViewChange = (newView: string) => {
-    setView(newView as any);
-    if (calendarRef) {
-      calendarRef.getApi().changeView(newView);
+  const handleViewChange = (
+    newView: "dayGridMonth" | "timeGridWeek" | "timeGridDay" | "listWeek"
+  ) => {
+    setView(newView);
+    if (calendarRef.current) {
+      calendarRef.current.getApi().changeView(newView);
 
       // When changing to a day or week view, make sure we see the tasks for the selected date
       if (newView === "timeGridDay" || newView === "timeGridWeek") {
-        calendarRef.getApi().gotoDate(date);
+        calendarRef.current.getApi().gotoDate(date);
       }
     }
   };
@@ -422,9 +339,9 @@ export default function CalendarPage() {
             variant="outline"
             size="icon"
             onClick={() => {
-              if (calendarRef) {
-                calendarRef.getApi().prev();
-                setDate(calendarRef.getApi().getDate());
+              if (calendarRef.current) {
+                calendarRef.current.getApi().prev();
+                setDate(calendarRef.current.getApi().getDate());
               }
             }}
           >
@@ -440,9 +357,9 @@ export default function CalendarPage() {
             variant="outline"
             size="icon"
             onClick={() => {
-              if (calendarRef) {
-                calendarRef.getApi().next();
-                setDate(calendarRef.getApi().getDate());
+              if (calendarRef.current) {
+                calendarRef.current.getApi().next();
+                setDate(calendarRef.current.getApi().getDate());
               }
             }}
           >
@@ -452,9 +369,9 @@ export default function CalendarPage() {
             variant="outline"
             size="sm"
             onClick={() => {
-              if (calendarRef) {
-                calendarRef.getApi().today();
-                setDate(calendarRef.getApi().getDate());
+              if (calendarRef.current) {
+                calendarRef.current.getApi().today();
+                setDate(calendarRef.current.getApi().getDate());
               }
             }}
           >
@@ -527,9 +444,9 @@ export default function CalendarPage() {
                 </div>
               ) : (
                 <div className="calendar-container" style={{ height: "600px" }}>
-                  <TooltipProvider>
-                    <FullCalendar
-                      ref={(ref) => ref && setCalendarRef(ref)}
+                  {/* <TooltipProvider> */}
+                  {/* <FullCalendar
+                      ref={calendarRef}
                       plugins={[
                         dayGridPlugin,
                         timeGridPlugin,
@@ -605,8 +522,8 @@ export default function CalendarPage() {
                           info.el.appendChild(tooltipDiv);
                         }
                       }}
-                    />
-                  </TooltipProvider>
+                    /> */}
+                  {/* </TooltipProvider> */}
                 </div>
               )}
             </CardContent>
@@ -702,7 +619,7 @@ export default function CalendarPage() {
                     </div>
                     <div className="mt-2 space-y-2">
                       {optimization.breakSuggestions.map(
-                        (breakSuggestion: any, index: number) => (
+                        (breakSuggestion, index) => (
                           <div
                             key={index}
                             className="flex items-center justify-between text-sm"
@@ -730,14 +647,12 @@ export default function CalendarPage() {
                       <span className="font-medium">Focus Tips</span>
                     </div>
                     <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                      {optimization.focusTips.map(
-                        (tip: string, index: number) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <span className="text-primary">•</span>
-                            <span>{tip}</span>
-                          </li>
-                        )
-                      )}
+                      {optimization.focusTips.map((tip, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          <span>{tip}</span>
+                        </li>
+                      ))}
                     </ul>
                   </motion.div>
                 </>
@@ -778,7 +693,7 @@ export default function CalendarPage() {
                       onClick={() => setSelectedTask(task)}
                     >
                       <div
-                        className={`h-2 w-2 rounded-full bg-${task.priority === "high" ? "destructive" : task.priority === "medium" ? "amber-500" : "emerald-500"}`}
+                        className="h-2 w-2 rounded-full"
                         style={{
                           backgroundColor: getPriorityColor(task.priority),
                         }}
@@ -918,7 +833,11 @@ export default function CalendarPage() {
                       </h4>
                       <div className="flex items-center gap-2 mt-1">
                         <Avatar className="h-6 w-6">
-                          <AvatarImage src={selectedTask.assignee.avatar} />
+                          <AvatarImage
+                            src={
+                              selectedTask.assignee.avatar || "/placeholder.svg"
+                            }
+                          />
                           <AvatarFallback>
                             {selectedTask.assignee.name[0]}
                           </AvatarFallback>

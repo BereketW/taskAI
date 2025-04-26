@@ -22,7 +22,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { authClient } from "@/lib/auth-client";
 import { defaultWorkspace } from "@/actions/workspaces";
-import { log } from "console";
+// import { log } from "console";
 
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +36,7 @@ export default function SignUpPage() {
   const handleGithubLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const { data, error } = await authClient.signIn.social({
+    await authClient.signIn.social({
       provider: "github",
       callbackURL: "/dashboard",
     });
@@ -45,7 +45,7 @@ export default function SignUpPage() {
   const handleGoogleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const { data, error } = await authClient.signIn.social({
+    await authClient.signIn.social({
       provider: "google",
       callbackURL: "/dashboard",
     });
@@ -56,12 +56,12 @@ export default function SignUpPage() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await authClient.signUp.email(
+      await authClient.signUp.email(
         {
           name,
           email,
           password,
-          // callbackURL: "/verify-email", // Changed to verification page
+          callbackURL: "/onboarding", // Changed to verification page
         },
         {
           onRequest: () => {
@@ -92,7 +92,6 @@ export default function SignUpPage() {
   };
 
   const handleResendVerification = async () => {
-    const { data: session } = authClient.getSession();
     setResendingEmail(true);
     try {
       await authClient.sendVerificationEmail({
@@ -122,7 +121,7 @@ export default function SignUpPage() {
                 Verify your email
               </CardTitle>
               <CardDescription>
-                We've sent a verification link to{" "}
+                {"We've"} sent a verification link to{" "}
                 <span className="font-medium">{email}</span>
               </CardDescription>
             </CardHeader>
@@ -137,7 +136,7 @@ export default function SignUpPage() {
 
               <div className="text-sm text-muted-foreground">
                 <p>
-                  Didn't receive the email? Check your spam folder or click
+                  {" Didn't"} receive the email? Check your spam folder or click
                   below to resend.
                 </p>
               </div>

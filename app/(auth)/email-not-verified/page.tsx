@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -19,15 +20,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { authClient } from "@/lib/auth-client";
 
 export default function EmailNotVerifiedPage() {
-  const router = useRouter();
+  // const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const {
-    data: session,
-    isPending, //loading state
-    error, //error object
-    refetch, //refetch the session
-  } = authClient.useSession();
+  const { data: session } = authClient.useSession();
   const handleResendVerification = async () => {
     setIsLoading(true);
     try {
@@ -35,9 +31,9 @@ export default function EmailNotVerifiedPage() {
       //     throw new Error("No email found");
       //   }
 
-      const { data, error } = await authClient.sendVerificationEmail({
+      await authClient.sendVerificationEmail({
         // email: "anonytempo5@gmail.com",
-        email: session?.user.email,
+        email: session?.user?.email || "",
         callbackURL: "/verify-email",
       });
 

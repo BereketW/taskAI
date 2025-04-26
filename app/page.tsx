@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -98,9 +99,6 @@ function ElegantShape({
 export default function LandingPage() {
   const [isVisible, setIsVisible] = useState(false);
   const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 1000], [0, 300]);
-  const y2 = useTransform(scrollY, [0, 1000], [0, -300]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0.2]);
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [bubbles] = useState(() =>
@@ -491,7 +489,7 @@ export default function LandingPage() {
                           <div className="flex flex-col gap-4 h-full">
                             <div className="flex-1">
                               <p className="italic text-white/60">
-                                "{testimonial.quote}"
+                                &quot;{testimonial.quote}&quot;
                               </p>
                             </div>
                             <div>

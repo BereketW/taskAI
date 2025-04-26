@@ -42,17 +42,12 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [theme, setTheme] = useState("system");
   const [language, setLanguage] = useState("en");
-  const {
-    data: session,
-    isPending, //loading state
-    error, //error object
-    refetch, //refetch the session
-  } = authClient.useSession();
+  const { data: session } = authClient.useSession();
 
   // Account Setup State
-  const [firstName, setFirstName] = useState("John");
-  const [lastName, setLastName] = useState("Doe");
-  const [email, setEmail] = useState("john.doe@example.com");
+  // const [firstName, setFirstName] = useState("John");
+  // const [lastName, setLastName] = useState("Doe");
+  // const [email, setEmail] = useState("john.doe@example.com");
   const [jobTitle, setJobTitle] = useState("Product Manager");
   const [company, setCompany] = useState("Acme Inc.");
   const [workStyle, setWorkStyle] = useState("individual");

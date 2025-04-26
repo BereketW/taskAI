@@ -1,11 +1,11 @@
 import WorkspaceDetailPage from "@/components/workspace/worspace-detail-page";
 
 import React from "react";
-import axios from "axios";
-import { getAllWorkspaces, getSingleWorkspace } from "@/actions/workspaces";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { authClient } from "@/lib/auth-client";
+// import axios from "axios";
+// import { getAllWorkspaces, getSingleWorkspace } from "@/actions/workspaces";
+// import { auth } from "@/lib/auth";
+// import { headers } from "next/headers";
+// import { authClient } from "@/lib/auth-client";
 export default async function Page({
   params,
 }: {

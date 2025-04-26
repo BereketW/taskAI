@@ -40,7 +40,7 @@ export default function InsightDetailPage() {
             Productivity Insights
           </h2>
           <p className="text-muted-foreground">
-            Detailed analysis of your team's performance
+            Detailed analysis of your {"team's"} performance
           </p>
         </div>
         <div className="flex items-center space-x-2">

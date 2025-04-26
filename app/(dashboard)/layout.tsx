@@ -2,9 +2,9 @@ import type React from "react";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "next-themes";
-import { NotificationProvider } from "@/components/ui/notification-bar";
-import { NotificationDemo } from "@/components/notification-demo";
-import { checkDeadline } from "@/lib/cron";
+// import { NotificationProvider } from "@/components/ui/notification-bar";
+// import { NotificationDemo } from "@/components/notification-demo";
+// import { checkDeadline } from "@/lib/cron";
 // import { ThemeProvider } from "@/components/theme-provider";
 
 export default async function RootLayout({
@@ -23,11 +23,11 @@ export default async function RootLayout({
       disableTransitionOnChange
     >
       {/* <NotificationProvider> */}
-      <div className="flex gap-4 py-6 px-4 ">
+      <div className="flex gap-4  ">
         <div className="">
           <AppSidebar />
         </div>
-        <main className="flex-1">
+        <main className="flex-1 max-h-svh ">
           <DashboardHeader />
           {children}
         </main>

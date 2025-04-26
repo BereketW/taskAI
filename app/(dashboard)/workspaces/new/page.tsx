@@ -44,6 +44,7 @@ export default function NewWorkspacePage() {
         },
         body: JSON.stringify({ name, description }),
       });
+      return data;
     } catch (error) {
       console.log(error);
     } finally {

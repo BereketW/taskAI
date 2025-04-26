@@ -1,7 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 @layer base {
   :root {
     /* Light mode - elegant whitish theme */
@@ -247,4 +251,311 @@
 
 .auth-background {
   @apply bg-background;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+}
+
+/* Typography */
+.font-pacifico {
+  font-family: var(--font-pacifico), cursive;
+}
+
+/* Patterns and backgrounds */
+.grid-pattern {
+  background-image: linear-gradient(
+      to right,
+      hsl(var(--primary) / 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, hsl(var(--primary) / 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.dot-pattern {
+  background-image: radial-gradient(
+    hsl(var(--primary) / 0.05) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+}
+
+.hexagon-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l30 17.32v34.64L30 60 0 51.96V17.32L30 0zm0 10.39L8.66 22.19v26.22L30 60l21.34-11.61V22.19L30 10.39z' fill='rgba(99,102,241,0.05)' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+/* Card styles */
+.card-elegant {
+  @apply bg-card border border-border backdrop-blur-sm transition-all duration-300 shadow-sm;
+}
+
+/* Button effects */
+.btn-gradient {
+  background-size: 200% auto;
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+  background-position: right center;
+}
+
+.btn-primary-gradient {
+  background-image: linear-gradient(
+    to right,
+    hsl(var(--primary)) 0%,
+    hsl(var(--secondary)) 50%,
+    hsl(var(--primary)) 100%
+  );
+  @apply text-white;
+}
+
+/* Decorative elements */
+.hero-gradient {
+  @apply dark:bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/_0.15)_0%,transparent_50%)] bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/_0.08)_0%,transparent_50%)];
+}
+
+.accent-line {
+  @apply dark:bg-[linear-gradient(90deg,transparent,hsl(var(--primary)/_0.3),transparent)] bg-[linear-gradient(90deg,transparent,hsl(var(--primary)/_0.2),transparent)];
+}
+
+.hover-glow {
+  transition: all 0.3s ease;
+}
+
+.hover-glow:hover {
+  @apply dark:shadow-[0_0_15px_hsl(var(--primary)/_0.5)] shadow-[0_0_15px_hsl(var(--primary)/_0.3)];
+}
+
+.dashboard-decoration {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  @apply dark:bg-[radial-gradient(circle_at_center,hsl(var(--primary)/_0.2),transparent_70%)] bg-[radial-gradient(circle_at_center,hsl(var(--primary)/_0.1),transparent_70%)];
+  filter: blur(20px);
+  z-index: 0;
+}
+
+.decoration-1 {
+  @apply dark:bg-[radial-gradient(circle_at_center,hsl(var(--primary)/_0.2),transparent_70%)] bg-[radial-gradient(circle_at_center,hsl(var(--primary)/_0.1),transparent_70%)];
+}
+
+.decoration-2 {
+  @apply dark:bg-[radial-gradient(circle_at_center,hsl(var(--secondary)/_0.2),transparent_70%)] bg-[radial-gradient(circle_at_center,hsl(var(--secondary)/_0.1),transparent_70%)];
+}
+
+/* Elegant shapes */
+.elegant-shape {
+  @apply absolute inset-0 rounded-full;
+  @apply bg-gradient-to-r to-transparent;
+  @apply backdrop-blur-[2px];
+  @apply dark:border-2 dark:border-white/[0.15] border-2 border-primary/10;
+  @apply dark:shadow-[0_8px_32px_0_rgba(255,255,255,0.1)] shadow-[0_8px_32px_0_rgba(99,102,241,0.1)];
+  @apply after:absolute after:inset-0 after:rounded-full;
+  @apply dark:after:bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent_70%)] after:bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.1),transparent_70%)];
+}
+
+.elegant-shape-indigo {
+  @apply dark:from-indigo-500/[0.15] from-indigo-500/[0.08];
+}
+
+.elegant-shape-rose {
+  @apply dark:from-rose-500/[0.15] from-rose-500/[0.08];
+}
+
+.elegant-shape-violet {
+  @apply dark:from-violet-500/[0.15] from-violet-500/[0.08];
+}
+
+.elegant-shape-amber {
+  @apply dark:from-amber-500/[0.15] from-amber-500/[0.08];
+}
+
+.elegant-shape-cyan {
+  @apply dark:from-cyan-500/[0.15] from-cyan-500/[0.08];
+}
+
+/* Form elements */
+.form-input-elegant {
+  @apply bg-background border border-input focus:border-primary/50 focus:ring-primary/20;
+}
+
+/* Auth pages specific */
+.auth-card {
+  @apply rounded-xl overflow-hidden;
+  @apply bg-card backdrop-blur-sm;
+  @apply border border-border;
+  @apply shadow-lg;
+  position: relative;
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  @apply bg-gradient-to-r from-primary to-secondary;
+}
+
+.auth-input {
+  @apply bg-background;
+  @apply border-input;
+  @apply focus:border-primary/50 focus:ring-primary/20;
+  @apply placeholder-muted-foreground;
+}
+
+.auth-button {
+  @apply bg-gradient-to-r from-primary to-secondary;
+  @apply hover:opacity-90 transition-opacity;
+  @apply text-white font-medium;
+}
+
+.auth-social-button {
+  @apply bg-background;
+  @apply border border-input;
+  @apply hover:bg-accent;
+  @apply text-foreground;
+}
+
+.auth-link {
+  @apply text-primary hover:text-primary/80;
+  @apply transition-colors duration-200;
+}
+
+.auth-background {
+  @apply bg-background;
+}
+
+/* Message bubbles */
+.message-bubble {
+  @apply rounded-lg p-4 text-sm overflow-hidden;
+  word-break: break-word;
+}
+
+.user-message {
+  @apply bg-secondary text-secondary-foreground;
+}
+
+.ai-message {
+  @apply bg-muted text-foreground;
+}
+
+/* Input field */
+.chat-input {
+  @apply bg-black shadow-md rounded-xl  px-4 py-3 flex items-center gap-2 border border-border/30;
+}
+
+.chat-input-icon {
+  @apply text-muted-foreground hover:text-foreground transition-colors;
+}
+
+/* Reaction buttons */
+.reaction-button {
+  @apply p-2 rounded-md hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground;
+}
+
+.reaction-panel {
+  @apply flex flex-col gap-1 absolute -left-12;
+}
+
+/* Image container */
+.image-container {
+  @apply relative mt-2 rounded-lg overflow-hidden;
+}
+
+.image-edit-button {
+  @apply flex items-center gap-1 text-xs bg-secondary/80 text-secondary-foreground px-3 py-1.5 rounded-full mt-2 hover:bg-secondary transition-colors;
+}
+
+/* Welcome screen */
+.welcome-screen {
+  @apply flex flex-col items-center justify-center text-center p-8 space-y-4;
+}
+
+/* Custom scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply rounded bg-muted-foreground/20;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/40;
+}
+
+/* Markdown styling */
+.markdown-body {
+  @apply text-sm overflow-hidden;
+}
+
+.markdown-body pre {
+  @apply my-4 rounded-lg overflow-x-auto;
+}
+
+.markdown-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.markdown-body table {
+  @apply w-full border-collapse my-4;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  @apply border border-border p-2;
+}
+
+.markdown-body img {
+  @apply max-w-full h-auto rounded-md my-4;
+  max-height: 300px;
+  object-fit: contain;
+}
+
+.markdown-body blockquote {
+  @apply border-l-4 border-primary/30 pl-4 italic my-4;
+}
+
+.markdown-body ul {
+  @apply list-disc pl-5 my-4;
+}
+
+.markdown-body ol {
+  @apply list-decimal pl-5 my-4;
+}
+
+.markdown-body li {
+  @apply mb-1;
+}
+
+.markdown-body hr {
+  @apply my-4 border-t border-border;
+}
+
+/* Code block copy button */
+.code-block {
+  @apply relative;
+}
+
+.copy-button {
+  @apply absolute top-2 right-2 p-1 rounded-md bg-muted-foreground/20 text-muted-foreground hover:bg-muted-foreground/30 transition-colors;
 }

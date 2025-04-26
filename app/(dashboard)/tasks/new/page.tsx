@@ -57,7 +57,7 @@ export default function NewTaskPage() {
   const [description, setDescription] = useState("");
   const [workspaces, setWorkspace] = useState([]);
   const [selectedTasklist, setSelectedTasklist] = useState("");
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
   const [generatedSubtasks, setGeneratedSubtasks] = useState([]);
   const [isGeneratingSubtasks, setIsGeneratingSubtasks] = useState(false);
   const [naturalLanguageInput, setNaturalLanguageInput] = useState("");

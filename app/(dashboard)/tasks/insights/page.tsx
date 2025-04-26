@@ -332,7 +332,9 @@ export default function InsightsPage() {
             <Card className="lg:col-span-3">
               <CardHeader>
                 <CardTitle>Peak Performance Times</CardTitle>
-                <CardDescription>When you're most productive</CardDescription>
+                <CardDescription>
+                  When {"you're"} most productive
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 
@@ -15,20 +15,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { authClient } from "@/lib/auth-client";
+// import { authClient } from "@/lib/auth-client";
 // import {
 //   createDefaultTaskList,
 //   createDefaultWorkspace,
 // } from "@/lib/defaultworkspace";
 
 export default function VerifyEmailPage() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  // const searchParams = useSearchParams();
+  // const token = searchParams.get("token");
 
-  const [verificationState, setVerificationState] = useState<
-    "loading" | "success" | "error"
-  >("loading");
-
+  const [verificationState] = useState<"loading" | "success" | "error">(
+    "loading"
+  );
+  // function handleVerificationState() {
+  //   setVerificationState("loading");
+  // }
   // useEffect(() => {
   //   const verifyEmail = async () => {
   //     if (!token) {

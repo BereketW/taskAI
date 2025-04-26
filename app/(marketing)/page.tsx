@@ -1,20 +1,27 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { motion } from "framer-motion"
-import { ArrowRight, CheckCircle, Sparkles } from "lucide-react"
+// import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { ArrowRight, CheckCircle, Sparkles } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function LandingPage() {
-  const [isVisible, setIsVisible] = useState(false)
+  // const [isVisible, setIsVisible] = useState(false)
 
-  useEffect(() => {
-    setIsVisible(true)
-  }, [])
+  // useEffect(() => {
+  //   setIsVisible(true);
+  // }, []);
 
   const container = {
     hidden: { opacity: 0 },
@@ -24,12 +31,12 @@ export default function LandingPage() {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const item = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 },
-  }
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -60,8 +67,9 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              Boost your productivity with intelligent task management. Let AI optimize your schedule, prioritize tasks,
-              and provide personalized insights.
+              Boost your productivity with intelligent task management. Let AI
+              optimize your schedule, prioritize tasks, and provide personalized
+              insights.
             </motion.p>
             <motion.div
               className="flex flex-wrap items-center justify-center gap-4"
@@ -74,7 +82,12 @@ export default function LandingPage() {
                   Get Started <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="rounded-full">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="rounded-full"
+              >
                 <Link href="/sign-in">Sign In</Link>
               </Button>
             </motion.div>
@@ -94,7 +107,8 @@ export default function LandingPage() {
               Smart Features for Smart People
             </h2>
             <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              TaskAI combines powerful task management with cutting-edge AI to help you work smarter, not harder.
+              TaskAI combines powerful task management with cutting-edge AI to
+              help you work smarter, not harder.
             </p>
           </div>
           <motion.div
@@ -107,35 +121,40 @@ export default function LandingPage() {
             {[
               {
                 title: "AI Task Suggestions",
-                description: "Get intelligent suggestions for tasks based on your habits and patterns.",
+                description:
+                  "Get intelligent suggestions for tasks based on your habits and patterns.",
                 icon: Sparkles,
                 color: "bg-secondary/10",
                 textColor: "text-secondary",
               },
               {
                 title: "Smart Prioritization",
-                description: "AI automatically ranks your tasks by urgency and importance.",
+                description:
+                  "AI automatically ranks your tasks by urgency and importance.",
                 icon: CheckCircle,
                 color: "bg-primary/10",
                 textColor: "text-primary",
               },
               {
                 title: "Intelligent Deadlines",
-                description: "AI suggests the optimal time to complete tasks based on your schedule.",
+                description:
+                  "AI suggests the optimal time to complete tasks based on your schedule.",
                 icon: Sparkles,
                 color: "bg-secondary/10",
                 textColor: "text-secondary",
               },
               {
                 title: "Productivity Insights",
-                description: "Get personalized insights about your productivity patterns.",
+                description:
+                  "Get personalized insights about your productivity patterns.",
                 icon: CheckCircle,
                 color: "bg-primary/10",
                 textColor: "text-primary",
               },
               {
                 title: "Team Collaboration",
-                description: "Assign tasks to team members and track progress together.",
+                description:
+                  "Assign tasks to team members and track progress together.",
                 icon: Sparkles,
                 color: "bg-secondary/10",
                 textColor: "text-secondary",
@@ -151,13 +170,19 @@ export default function LandingPage() {
               <motion.div key={index} variants={item}>
                 <Card className="backdrop-blur-lg bg-white/10 dark:bg-gray-950/30 border-muted/40 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1">
                   <CardHeader>
-                    <div className={`w-12 h-12 rounded-full ${feature.color} flex items-center justify-center mb-4`}>
-                      <feature.icon className={`h-6 w-6 ${feature.textColor}`} />
+                    <div
+                      className={`w-12 h-12 rounded-full ${feature.color} flex items-center justify-center mb-4`}
+                    >
+                      <feature.icon
+                        className={`h-6 w-6 ${feature.textColor}`}
+                      />
                     </div>
                     <CardTitle>{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">{feature.description}</p>
+                    <p className="text-muted-foreground">
+                      {feature.description}
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -184,8 +209,9 @@ export default function LandingPage() {
                 Experience the Future of Task Management
               </h2>
               <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Our intuitive dashboard gives you a complete overview of your tasks, priorities, and productivity
-                insights. Let AI handle the optimization while you focus on what matters.
+                Our intuitive dashboard gives you a complete overview of your
+                tasks, priorities, and productivity insights. Let AI handle the
+                optimization while you focus on what matters.
               </p>
               <ul className="grid gap-2 py-4">
                 {[
@@ -234,9 +260,12 @@ export default function LandingPage() {
             <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary backdrop-blur-md">
               Testimonials
             </div>
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Loved by Productive People</h2>
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+              Loved by Productive People
+            </h2>
             <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              See what our users have to say about how TaskAI has transformed their productivity.
+              See what our users have to say about how TaskAI has transformed
+              their productivity.
             </p>
           </div>
           <motion.div
@@ -272,7 +301,8 @@ export default function LandingPage() {
                 role: "Team Lead",
               },
               {
-                quote: "The AI prioritization feature ensures I'm always working on what matters most. Game changer!",
+                quote:
+                  "The AI prioritization feature ensures I'm always working on what matters most. Game changer!",
                 author: "Lisa Patel",
                 role: "Freelance Designer",
               },
@@ -288,11 +318,15 @@ export default function LandingPage() {
                   <CardContent className="p-6">
                     <div className="flex flex-col gap-4 h-full">
                       <div className="flex-1">
-                        <p className="italic text-muted-foreground">"{testimonial.quote}"</p>
+                        <p className="italic text-muted-foreground">
+                          &quot;{testimonial.quote}&quot;
+                        </p>
                       </div>
                       <div>
                         <p className="font-semibold">{testimonial.author}</p>
-                        <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {testimonial.role}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -310,7 +344,9 @@ export default function LandingPage() {
             <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary backdrop-blur-md">
               Pricing
             </div>
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Simple, Transparent Pricing</h2>
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+              Simple, Transparent Pricing
+            </h2>
             <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
               Choose the plan that works best for you or your team.
             </p>
@@ -335,7 +371,8 @@ export default function LandingPage() {
                 title: "Pro",
                 price: "$9.99",
                 period: "/month",
-                description: "Ideal for professionals seeking AI-powered productivity.",
+                description:
+                  "Ideal for professionals seeking AI-powered productivity.",
                 features: [
                   "Advanced AI task suggestions",
                   "Unlimited task history",
@@ -387,14 +424,21 @@ export default function LandingPage() {
                     <CardTitle>{plan.title}</CardTitle>
                     <div className="flex items-baseline">
                       <span className="text-3xl font-bold">{plan.price}</span>
-                      {plan.period && <span className="text-muted-foreground ml-1">{plan.period}</span>}
+                      {plan.period && (
+                        <span className="text-muted-foreground ml-1">
+                          {plan.period}
+                        </span>
+                      )}
                     </div>
                     <CardDescription>{plan.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex-1">
                     <ul className="grid gap-2 py-4">
                       {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center gap-2">
+                        <li
+                          key={featureIndex}
+                          className="flex items-center gap-2"
+                        >
                           <CheckCircle className="h-4 w-4 text-primary" />
                           <span>{feature}</span>
                         </li>
@@ -432,7 +476,8 @@ export default function LandingPage() {
                 Ready to Transform Your Productivity?
               </h2>
               <p className="max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Join thousands of users who have revolutionized their task management with TaskAI.
+                Join thousands of users who have revolutionized their task
+                management with TaskAI.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
                 <Button asChild size="lg" className="rounded-full">
@@ -440,7 +485,12 @@ export default function LandingPage() {
                     Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="rounded-full">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="rounded-full"
+                >
                   <Link href="/contact">Contact Sales</Link>
                 </Button>
               </div>
@@ -449,6 +499,5 @@ export default function LandingPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }
-

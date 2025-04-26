@@ -29,7 +29,7 @@ export default function SignInPage() {
   const handleGithubLogin = async (e: React.MouseEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const { data, error } = await authClient.signIn.social({
+    await authClient.signIn.social({
       provider: "github",
       callbackURL: "/dashboard",
     });
@@ -38,7 +38,7 @@ export default function SignInPage() {
   const handleGoogleLogin = async (e: React.MouseEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const { data, error } = await authClient.signIn.social({
+    await authClient.signIn.social({
       provider: "google",
       callbackURL: "/dashboard",
     });
@@ -47,7 +47,7 @@ export default function SignInPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const { data, error } = await authClient.signIn.email(
+    await authClient.signIn.email(
       {
         email,
         password,
@@ -56,7 +56,7 @@ export default function SignInPage() {
       {
         onSuccess: (ctx) => {
           setIsLoading(false);
-          const authToken = ctx.response.headers.get("set-auth-token");
+          const authToken = ctx.response.headers.get("set-auth-token") || "";
           localStorage.setItem("bearer_token", authToken);
           window.location.href = "/dashboard";
         },
@@ -74,7 +74,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <div className="relative flex justify-center  px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-secondary/[0.05] blur-3xl" />
 
@@ -91,12 +91,12 @@ export default function SignInPage() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md z-10"
       >
-        <div className="text-center mb-8">
+        {/* <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/80">
             Welcome Back
           </h1>
           <p className="text-white/60">Sign in to your account to continue</p>
-        </div>
+        </div> */}
 
         <Card className="border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-xl">
           <CardHeader className="space-y-1 pb-2">
