@@ -3,96 +3,105 @@
 import type React from "react";
 
 import { useChat } from "@ai-sdk/react";
-import { useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Send, Bot, Sparkles, X, StopCircle } from "lucide-react";
+import { Send, Paperclip, Globe, Eye, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ChatMessage } from "@/components/chat-message";
 import { MessageSkeleton } from "@/components/message-skeleton";
-import { cn } from "@/lib/utils";
+import { WelcomeScreen } from "@/components/welcome-screen";
+import { Textarea } from "./ui/textarea";
 
 export default function Chat() {
+  const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [incognito, setIncognito] = useState(false);
 
   const {
-    status,
-    stop,
     messages,
-    input,
+    input: chatInput,
     handleInputChange,
     handleSubmit,
     isLoading,
-    error,
-  } = useChat();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    error: chatError,
+  } = useChat({
+    api: "/api/chat",
+    onResponse: (response) => {
+      // Check if the response is ok
+      if (!response.ok) {
+        response
+          .json()
+          .then((data) => {
+            setError(
+              data.error || "An error occurred while fetching the response."
+            );
+          })
+          .catch(() => {
+            setError("An error occurred while fetching the response.");
+          });
+      } else {
+        setError(null);
+      }
+      // Scroll to bottom when a new response starts
+      scrollToBottom();
+    },
+    onError: (error) => {
+      console.error("Chat error:", error);
+      setError(error.message || "An error occurred during the conversation.");
+    },
+  });
 
-  // Scroll to bottom when messages change
+  // Update our local input state when the AI SDK input changes
+  useEffect(() => {
+    setInput(chatInput);
+  }, [chatInput]);
+
+  // Scroll to bottom function
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
+  // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-    try {
-      await handleSubmit();
-    } catch (e: any) {
-      console.error("Submission error:", e);
-    }
+    setError(null);
+    handleSubmit(e);
+  };
+
+  // Auto-resize textarea
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    handleInputChange(e);
+
+    // Reset height to auto to get the correct scrollHeight
+    e.target.style.height = "auto";
+    // Set the height to scrollHeight to fit content
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
   };
 
   return (
-    <div className="flex h-[80vh] overflow-scroll flex-col">
-      <div className="flex items-center justify-between   p-4">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Bot className="h-6 w-6 text-primary" />
-            <span className="absolute -right-1 -top-1 flex h-3 w-3">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-primary"></span>
-            </span>
-          </div>
-          <h1 className="font-pacifico text-lg font-semibold text-foreground">
-            Elegant AI
-          </h1>
-        </div>
-        <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-          <Sparkles className="h-3 w-3 text-primary" />
-          <span>Powered by GPT-4o</span>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-scroll p-4 scrollbar-thin">
-        {error && (
-          <div className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-destructive">
-            <p className="text-sm font-medium">
-              Error: {error.message || error}
-            </p>
-          </div>
-        )}
-
+    <div className="flex flex-col h-[90vh] overflow-hidden bg-background">
+      <div
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-4 pb-6"
+      >
         {messages.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="mb-4 rounded-full bg-primary/10 p-4">
-              <Bot className="h-8 w-8 text-primary" />
-            </div>
-            <h2 className="mb-2 text-xl font-semibold text-foreground">
-              How can I help you today?
-            </h2>
-            <p className="max-w-md text-muted-foreground">
-              Ask me anything and I'll do my best to assist you with thoughtful
-              answers.
-            </p>
-          </div>
+          <WelcomeScreen />
         ) : (
-          <div className="space-y-4">
+          <div className="py-4">
             <AnimatePresence initial={false}>
-              {messages.map((message, index) => (
-                <ChatMessage key={message.id || index} message={message} />
+              {messages.map((message) => (
+                <ChatMessage key={message.id} message={message} error={error} />
               ))}
               {isLoading && <MessageSkeleton />}
             </AnimatePresence>
@@ -101,47 +110,42 @@ export default function Chat() {
         )}
       </div>
 
-      <div className="border-t border-border bg-card/80 p-4">
-        <form onSubmit={handleFormSubmit} className="flex gap-2">
-          <Input
+      <div className="p-4 border-t border-border/20 bg-background">
+        <form onSubmit={handleFormSubmit} className="chat-input">
+          <button type="button" className="chat-input-icon">
+            <Paperclip className="h-5 w-5" />
+          </button>
+
+          <Textarea
             value={input}
-            onChange={handleInputChange}
-            placeholder="Type your message..."
-            className="form-input-elegant"
+            onChange={handleTextareaChange}
+            placeholder="Ask me anything..."
+            className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 flex-1 px-2 min-h-[40px] max-h-[120px] resize-none"
             disabled={isLoading}
+            rows={1}
           />
-          {input && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="flex-shrink-0"
-              onClick={() =>
-                handleInputChange({ target: { value: "" } } as any)
-              }
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+
+          <button type="button" className="chat-input-icon">
+            <Globe className="h-5 w-5" />
+          </button>
+
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className={`chat-input-icon ${incognito ? "text-primary" : ""}`}
+              onClick={() => setIncognito(!incognito)}
+            >
+              <Eye className="h-5 w-5" />
+            </button>
+
+            <button type="button" className="chat-input-icon">
+              <MoreHorizontal className="h-5 w-5" />
+            </button>
+
             <Button
               type="submit"
-              disabled={!(status === "streaming" || status === "submitted")}
-              onClick={stop}
-              className={cn(
-                "bg-red-500",
-                (!input.trim() || isLoading) && "opacity-50",
-                !(status === "streaming" || status === "submitted") && "hidden"
-              )}
-            >
-              <StopCircle className="h-4 w-4 text-white" />
-            </Button>
-            <Button
               disabled={isLoading || !input.trim()}
-              className={cn(
-                "btn-gradient btn-primary-gradient",
-                (!input.trim() || isLoading) && "opacity-50"
-              )}
+              className="rounded-full bg-primary hover:bg-primary/90 h-8 w-8 p-0 flex items-center justify-center"
             >
               <Send className="h-4 w-4" />
             </Button>

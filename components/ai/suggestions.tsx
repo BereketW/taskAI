@@ -60,101 +60,101 @@ import {
 } from "@/components/ui/tooltip";
 
 // Mock data for development
-const mockInsights = {
-  confidenceScore: 0.91,
-  potentialTimeSaved: 12.5,
-  activeActionsCount: 8,
-  implementationRate: 0.78,
-  actions: [
-    {
-      id: 1,
-      title: "Reschedule Low-Priority Meetings",
-      description: "Move 3 non-critical meetings to next week",
-      impact: "High",
-      timeToImplement: "2 min",
-    },
-    {
-      id: 2,
-      title: "Delegate Code Review",
-      description: "Assign 5 pending reviews to available team members",
-      impact: "High",
-      timeToImplement: "5 min",
-    },
-    {
-      id: 3,
-      title: "Break Down Large Task",
-      description: "Split 'Database Migration' into smaller subtasks",
-      impact: "Medium",
-      timeToImplement: "10 min",
-    },
-  ],
-  suggestions: [
-    {
-      id: 1,
-      title: "Optimize Meeting Schedule",
-      suggestions: "Reduce meeting duration by 15 minutes",
-      actionType: "Optimization",
-      impactLevel: "high",
-      estimatedTime: 0.1,
-      aiConfidenceScore: 0.92,
-      aiInsight:
-        "Based on analysis of past meeting patterns, 85% of objectives can be achieved in shorter timeframes",
-    },
-    {
-      id: 2,
-      title: "Documentation Update Required",
-      suggestions: "Update API documentation for recent changes",
-      actionType: "Task",
-      impactLevel: "medium",
-      estimatedTime: 2,
-      aiConfidenceScore: 0.88,
-      aiInsight:
-        "Pattern analysis shows documentation gaps in recently modified features",
-    },
-    {
-      id: 3,
-      title: "Automate Report Generation",
-      suggestions: "Create automated weekly report generation",
-      actionType: "Automation",
-      impactLevel: "high",
-      estimatedTime: 4,
-      aiConfidenceScore: 0.95,
-      aiInsight: "Repetitive manual reporting patterns detected",
-    },
-    {
-      id: 4,
-      title: "Implement Focus Time Blocks",
-      suggestions: "Schedule 2-hour focus blocks for deep work",
-      actionType: "Productivity",
-      impactLevel: "high",
-      estimatedTime: 0.2,
-      aiConfidenceScore: 0.9,
-      aiInsight:
-        "Performance analysis shows 40% higher output during uninterrupted work periods",
-    },
-    {
-      id: 5,
-      title: "Consolidate Project Meetings",
-      suggestions: "Combine 3 separate project check-ins into one",
-      actionType: "Optimization",
-      impactLevel: "medium",
-      estimatedTime: 0.1,
-      aiConfidenceScore: 0.87,
-      aiInsight:
-        "Similar stakeholders are present in multiple meetings discussing related topics",
-    },
-    {
-      id: 6,
-      title: "Implement Automated Testing",
-      suggestions: "Set up CI/CD pipeline with automated tests",
-      actionType: "Automation",
-      impactLevel: "high",
-      estimatedTime: 8,
-      aiConfidenceScore: 0.93,
-      aiInsight: "Manual testing is consuming 30% of development time",
-    },
-  ],
-};
+// const mockInsights = {
+//   confidenceScore: 0.91,
+//   potentialTimeSaved: 12.5,
+//   activeActionsCount: 8,
+//   implementationRate: 0.78,
+//   actions: [
+//     {
+//       id: 1,
+//       title: "Reschedule Low-Priority Meetings",
+//       description: "Move 3 non-critical meetings to next week",
+//       impact: "High",
+//       timeToImplement: "2 min",
+//     },
+//     {
+//       id: 2,
+//       title: "Delegate Code Review",
+//       description: "Assign 5 pending reviews to available team members",
+//       impact: "High",
+//       timeToImplement: "5 min",
+//     },
+//     {
+//       id: 3,
+//       title: "Break Down Large Task",
+//       description: "Split 'Database Migration' into smaller subtasks",
+//       impact: "Medium",
+//       timeToImplement: "10 min",
+//     },
+//   ],
+//   suggestions: [
+//     {
+//       id: 1,
+//       title: "Optimize Meeting Schedule",
+//       suggestions: "Reduce meeting duration by 15 minutes",
+//       actionType: "Optimization",
+//       impactLevel: "high",
+//       estimatedTime: 0.1,
+//       aiConfidenceScore: 0.92,
+//       aiInsight:
+//         "Based on analysis of past meeting patterns, 85% of objectives can be achieved in shorter timeframes",
+//     },
+//     {
+//       id: 2,
+//       title: "Documentation Update Required",
+//       suggestions: "Update API documentation for recent changes",
+//       actionType: "Task",
+//       impactLevel: "medium",
+//       estimatedTime: 2,
+//       aiConfidenceScore: 0.88,
+//       aiInsight:
+//         "Pattern analysis shows documentation gaps in recently modified features",
+//     },
+//     {
+//       id: 3,
+//       title: "Automate Report Generation",
+//       suggestions: "Create automated weekly report generation",
+//       actionType: "Automation",
+//       impactLevel: "high",
+//       estimatedTime: 4,
+//       aiConfidenceScore: 0.95,
+//       aiInsight: "Repetitive manual reporting patterns detected",
+//     },
+//     {
+//       id: 4,
+//       title: "Implement Focus Time Blocks",
+//       suggestions: "Schedule 2-hour focus blocks for deep work",
+//       actionType: "Productivity",
+//       impactLevel: "high",
+//       estimatedTime: 0.2,
+//       aiConfidenceScore: 0.9,
+//       aiInsight:
+//         "Performance analysis shows 40% higher output during uninterrupted work periods",
+//     },
+//     {
+//       id: 5,
+//       title: "Consolidate Project Meetings",
+//       suggestions: "Combine 3 separate project check-ins into one",
+//       actionType: "Optimization",
+//       impactLevel: "medium",
+//       estimatedTime: 0.1,
+//       aiConfidenceScore: 0.87,
+//       aiInsight:
+//         "Similar stakeholders are present in multiple meetings discussing related topics",
+//     },
+//     {
+//       id: 6,
+//       title: "Implement Automated Testing",
+//       suggestions: "Set up CI/CD pipeline with automated tests",
+//       actionType: "Automation",
+//       impactLevel: "high",
+//       estimatedTime: 8,
+//       aiConfidenceScore: 0.93,
+//       aiInsight: "Manual testing is consuming 30% of development time",
+//     },
+//   ],
+// };
 
 // Custom stat card component
 const StatCard = ({

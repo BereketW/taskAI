@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+import Image from "next/image";
 import React from "react";
 
 export default function EmailTemplate({ url }) {
@@ -34,14 +36,12 @@ export default function EmailTemplate({ url }) {
                           borderRadius: "8px",
                         }}
                       >
-                        <img
+                        <Image
                           src="https://your-domain.com/logo.png"
                           alt="TaskAI Logo"
-                          style={{
-                            display: "block",
-                            width: "30px",
-                            height: "30px",
-                          }}
+                          width={30}
+                          className="block"
+                          height={30}
                         />
                       </div>
                     </td>

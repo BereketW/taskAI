@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   Bell,
-  CheckSquare,
   Menu,
   Plus,
   Search,
@@ -87,9 +86,9 @@ export function DashboardHeader() {
     },
   ]);
 
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session } = authClient.useSession();
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   useEffect(() => {

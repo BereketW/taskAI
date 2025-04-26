@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 import { AvatarFallback } from "@/components/ui/avatar";
 import { Avatar } from "@/components/ui/avatar";
@@ -11,7 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { authClient } from "@/lib/auth-client";
 import {
   CalendarDays,
   CheckCircle2,

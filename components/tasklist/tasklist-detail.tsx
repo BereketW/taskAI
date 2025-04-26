@@ -67,7 +67,7 @@ export default function TasklistDetailPage({ tasklist, isLoading = false }) {
     }
   }, [isLoading, tasklist]);
 
-  const handleStatusChange = async (taskId, checked) => {
+  const handleStatusChange = async () => {
     setIsUpdating(true);
     // Simulate API call
     setTimeout(() => {
