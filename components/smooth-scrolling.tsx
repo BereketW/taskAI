@@ -1,9 +1,23 @@
 "use client";
-import React from "react";
-import { ReactLenis } from "@studio-freight/react-lenis";
+import gsap from "gsap";
+import { LenisRef, ReactLenis } from "lenis/react";
+import { useEffect, useRef } from "react";
+
 export default function SmoothScrolling({ children }) {
+  const lenisRef = useRef<LenisRef>(null);
+
+  useEffect(() => {
+    function update(time) {
+      lenisRef.current?.lenis?.raf(time * 1000);
+    }
+
+    gsap.ticker.add(update);
+
+    return () => gsap.ticker.remove(update);
+  }, []);
+
   return (
-    <ReactLenis root options={{ lerp: 0.1, duration: 1, smoothWheel: true }}>
+    <ReactLenis options={{ autoRaf: false }} ref={lenisRef}>
       {children}
     </ReactLenis>
   );
