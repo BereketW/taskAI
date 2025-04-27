@@ -55,10 +55,10 @@ export default function SignInPage() {
       },
       {
         onSuccess: (ctx) => {
-          setIsLoading(false);
           const authToken = ctx.response.headers.get("set-auth-token") || "";
           localStorage.setItem("bearer_token", authToken);
           window.location.href = "/dashboard";
+          setIsLoading(false);
         },
         onError: (response) => {
           setIsLoading(false);
