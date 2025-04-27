@@ -90,6 +90,33 @@ export default function OnboardingPage() {
     );
   };
 
+  async function handleSubmit() {
+    try {
+      const data = await fetch("http://localhost:3000/api/onboarding", {
+        method: "POST",
+        body: JSON.stringify({
+          jobTitle,
+          company,
+          aiFeatures,
+          workStyle,
+          teamSize,
+          teamEmails,
+          roleInTeam,
+          primaryWorkType,
+          productivityPeaks,
+          calendarIntegration,
+          fileStorage,
+          aiAssistanceAreas,
+          primaryGoal,
+          communicationTool,
+          currentTools,
+        }),
+      });
+      console.log(data);
+    } catch (error: any) {
+      console.log(error?.message);
+    }
+  }
   const handleAIFeatureToggle = (value: string) => {
     setAiFeatures(
       aiFeatures.includes(value)
@@ -142,17 +169,6 @@ export default function OnboardingPage() {
       window.scrollTo(0, 0);
     }
   };
-  async function handleSubmit() {
-    try {
-      const data = await fetch("http://localhost:3000/api/onboarding", {
-        method: "POST",
-        body: JSON.stringify({ jobTitle, company }),
-      });
-      console.log(data);
-    } catch (error: any) {
-      console.log(error?.message);
-    }
-  }
 
   return (
     <div className="w-full max-w-3xl px-4">
