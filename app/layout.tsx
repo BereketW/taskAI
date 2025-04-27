@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { NotificationProvider } from "@/components/ui/notification-bar";
 import SmoothScrolling from "@/components/smooth-scrolling";
+// import SmoothScrolling from "@/components/smooth-scrolling";
 
 const inter = Inter({ subsets: ["latin"] });
 
