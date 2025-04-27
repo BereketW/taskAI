@@ -1,0 +1,30 @@
+[
+  {
+    "id": "FKD2TkMho0s3tkDh",
+    "createdAt": "2025-04-27T13:58:09.543Z",
+    "role": "user",
+    "content": "hello\n",
+    "parts": [
+      {
+        "type": "text",
+        "text": "hello\n"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "id": "msg-FE6J8X68aXVYqaXOOvQ2jErY",
+    "createdAt": "2025-04-27T13:58:26.913Z",
+    "content": "Hello Bereket! I'm TaskAI, your personal assistant for task management.\n\nI can help you with managing your tasks and workspaces. Currently, you don't have any tasks or workspaces listed.\n\nHow can I assist you today? Perhaps you'd like to create a new task or workspace?",
+    "toolInvocations": [],
+    "parts": [
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "Hello Bereket! I'm TaskAI, your personal assistant for task management.\n\nI can help you with managing your tasks and workspaces. Currently, you don't have any tasks or workspaces listed.\n\nHow can I assist you today? Perhaps you'd like to create a new task or workspace?"
+      }
+    ]
+  }
+]

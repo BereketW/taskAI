@@ -2,10 +2,16 @@ import { fetchTask, getSingleTask } from "@/actions/tasks";
 import { getAllWorkspaces, getSingleWorkspace } from "@/actions/workspaces";
 import { generateInsights } from "@/actions/insights";
 import { google } from "@ai-sdk/google";
-import { streamText, tool } from "ai";
+import {
+  appendClientMessage,
+  appendResponseMessages,
+  streamText,
+  tool,
+} from "ai";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
+import { saveChat, loadChat } from "@/hooks/chat-store";
 
 type ChatMessage = {
   role: "user" | "assistant" | "system";
@@ -54,9 +60,14 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const userId = session.user.id;
-  const body = await req.json();
+  const { message, id } = await req.json();
+  const previousMessages = await loadChat(id);
+  const messages = appendClientMessage({
+    messages: previousMessages,
+    message,
+  });
 
-  if (!Array.isArray(body.messages)) {
+  if (!Array.isArray(messages)) {
     console.warn(
       "[Validation Warning] 'messages' is missing or invalid format"
     );
@@ -117,14 +128,14 @@ Please use this information to provide personalized responses related to the use
 
   console.log("[Chat API] Fetched user context");
 
-  const formattedMessages: ChatMessage[] = body.messages.map(
-    (message: ChatMessage) => ({
-      role: message.role,
-      content: message.content,
-    })
-  );
+  // const formattedMessages: ChatMessage[] = messages.map(
+  //   (message: ChatMessage) => ({
+  //     role: message.role,
+  //     content: message.content,
+  //   })
+  // );
 
-  console.log("[Chat API] Formatted messages:", formattedMessages);
+  console.log("[Chat API] Formatted messages:", messages);
 
   const systemPrompt = `You are a helpful AI assistant for a task management application and your name is TaskAI.
 ${userContext}
@@ -149,7 +160,8 @@ Always provide well-formatted, syntax-highlighted code examples when relevant.`;
 
   const result = streamText({
     model: google("gemini-2.0-flash-thinking-exp-01-21"),
-    messages: formattedMessages,
+    messages,
+
     temperature: 0.7,
     system: systemPrompt,
     tools: {
@@ -208,7 +220,16 @@ Always provide well-formatted, syntax-highlighted code examples when relevant.`;
         },
       }),
     },
+    async onFinish({ response }) {
+      await saveChat({
+        id: id,
+        messages: appendResponseMessages({
+          messages: messages,
+          responseMessages: response.messages,
+        }),
+      });
+    },
   });
-
+  result.consumeStream();
   return result.toDataStreamResponse();
 }

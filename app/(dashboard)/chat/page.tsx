@@ -1,11 +1,7 @@
-import Chat from "@/components/chat";
+import { redirect } from "next/navigation";
+import { createChat } from "@/hooks/chat-store";
 
-export default function Home() {
-  return (
-    <main className="flex flex-col items-center justify-center bg-background p-0 h-[90vh] overflow-hidden">
-      <div className="w-[60svw] max-sm:w-full h-full">
-        <Chat />
-      </div>
-    </main>
-  );
+export default async function Page() {
+  const id = await createChat(); // create a new chat
+  redirect(`/chat/${id}`); // redirect to chat page, see below
 }

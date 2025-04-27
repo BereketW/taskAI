@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useChat } from "@ai-sdk/react";
+import { Message, useChat } from "@ai-sdk/react";
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Send, Paperclip, Globe, Eye, MoreHorizontal } from "lucide-react";
@@ -12,7 +12,13 @@ import { MessageSkeleton } from "@/components/message-skeleton";
 import { WelcomeScreen } from "@/components/welcome-screen";
 import { Textarea } from "./ui/textarea";
 
-export default function Chat() {
+export default function Chat({
+  id,
+  initialMessages,
+}: {
+  id?: string | undefined;
+  initialMessages: Message[];
+}) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -28,7 +34,11 @@ export default function Chat() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     error: chatError,
   } = useChat({
+    experimental_prepareRequestBody({ messages, id }) {
+      return { message: messages[messages.length - 1], id };
+    },
     api: "/api/chat",
+
     onResponse: (response) => {
       // Check if the response is ok
       if (!response.ok) {
@@ -52,6 +62,9 @@ export default function Chat() {
       console.error("Chat error:", error);
       setError(error.message || "An error occurred during the conversation.");
     },
+    initialMessages,
+    sendExtraMessageFields: true,
+    id,
   });
 
   // Update our local input state when the AI SDK input changes
