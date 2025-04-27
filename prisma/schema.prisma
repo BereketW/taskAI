@@ -39,6 +39,10 @@ model User {
   Notification    Notification[]
   Onboarding      Onboarding?
 
+  chats       Chat[]
+  documents   Document[]
+  suggestions Suggestion[]
+
   @@unique([email])
   @@map("user")
 }
@@ -342,6 +346,75 @@ model Integration {
 /**
  * ==========================
  */
+
+//Chatbot Schema
+
+model Chat {
+  id         String    @id @default(uuid())
+  createdAt  DateTime  @default(now())
+  title      String    @db.Text
+  userId     String
+  visibility String    @default("private") @db.VarChar(7)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages   Message[]
+  votes      Vote[]
+
+  @@map("Chat")
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  chatId      String
+  role        String   @db.VarChar
+  parts       Json
+  attachments Json
+  createdAt   DateTime @default(now())
+  chat        Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  votes       Vote[]
+
+  @@map("Message_v2")
+}
+
+model Vote {
+  chatId    String
+  messageId String
+  isUpvoted Boolean
+  chat      Chat    @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@id([chatId, messageId])
+  @@map("Vote_v2")
+}
+
+model Document {
+  id          String       @id @default(uuid())
+  createdAt   DateTime     @default(now())
+  title       String       @db.Text
+  content     String?      @db.Text
+  kind        String       @default("text") @db.VarChar(5)
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  suggestions Suggestion[]
+
+  @@unique([id, createdAt])
+  @@map("Document")
+}
+
+model Suggestion {
+  id                String   @id @default(uuid())
+  documentId        String
+  documentCreatedAt DateTime
+  originalText      String   @db.Text
+  suggestedText     String   @db.Text
+  description       String?  @db.Text
+  isResolved        Boolean  @default(false)
+  userId            String
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document          Document @relation(fields: [documentId, documentCreatedAt], references: [id, createdAt], onDelete: Cascade)
+
+  @@map("Suggestion")
+}
 
 enum Role {
   OWNER
