@@ -1,3 +1,4 @@
+import { getSingleWorkspace } from "@/actions/workspaces";
 import WorkspaceDetailPage from "@/components/workspace/worspace-detail-page";
 
 import React from "react";
