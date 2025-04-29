@@ -38,10 +38,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast } from "@/components/ui/use-toast";
+// import { toast } from "@/components/ui/use-toast";
 import { createTask } from "@/actions/workspaces";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "@/components/toast";
 
 export default function NewTaskPage() {
   const router = useRouter();
@@ -75,13 +76,16 @@ export default function NewTaskPage() {
 
         const data = await response.json();
         setWorkspace(data.workspaces);
+        toast({
+          type: "success",
+          description: "New task added",
+        });
       } catch (err) {
         console.log(err);
         setError(err.message);
         toast({
-          title: "Error loading workspaces",
-          description: "Please try again later.",
-          variant: "destructive",
+          type: "error",
+          description: err.message,
         });
       } finally {
         setIsLoading(false);
