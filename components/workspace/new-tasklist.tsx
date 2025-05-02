@@ -21,10 +21,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { createTaskList } from "@/actions/workspaces";
+import { toast } from "../toast";
 
 export default function NewTasklistPage({ id }) {
   const router = useRouter();
-  const { toast } = useToast();
+  // const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -42,15 +43,20 @@ export default function NewTasklistPage({ id }) {
       //   });
       const taskList = await createTaskList({ name, description, id });
       console.log("tasklist", taskList);
+      toast({
+        type: "success",
+        description: "New tasklist added",
+      });
     } catch (e) {
       console.error(e);
       setIsLoading(false);
+      toast({
+        type: "error",
+        description: "Error Occured",
+      });
     } finally {
       setIsLoading(false);
-      toast({
-        title: "Tasklist Created",
-        description: "Your new tasklist has been created successfully.",
-      });
+
       router.back();
     }
 

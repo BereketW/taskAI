@@ -36,12 +36,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <NotificationProvider>
-            <SmoothScrolling>
-              <div className="relative min-h-screen">
-                {children}
-                <Toaster />
-              </div>
-            </SmoothScrolling>
+            {/* <SmoothScrolling> */}
+            <div className="relative min-h-screen">
+              {children}
+              <Toaster />
+            </div>
+            {/* </SmoothScrolling> */}
           </NotificationProvider>
         </ThemeProvider>
       </body>

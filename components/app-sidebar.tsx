@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   ListTodo,
   LogOut,
+  MessageCircleCode,
   Settings,
   Sparkles,
   Users,
@@ -69,6 +70,13 @@ export function AppSidebar() {
       icon: FolderKanban,
       badge: "3",
       color: "from-emerald-600 to-teal-600",
+    },
+    {
+      title: "Chat with ai",
+      href: "/app(chat)/chat",
+      icon: MessageCircleCode,
+      badge: null,
+      color: "from-blue-600 to-indigo-600",
     },
   ];
 
