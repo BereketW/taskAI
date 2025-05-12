@@ -73,7 +73,7 @@ export function AppSidebar() {
     },
     {
       title: "Chat with ai",
-      href: "/app(chat)/chat",
+      href: "/app/chat",
       icon: MessageCircleCode,
       badge: null,
       color: "from-blue-600 to-indigo-600",

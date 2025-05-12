@@ -1,0 +1,30 @@
+[
+  {
+    "id": "wjkLfCS2PM3obPkq",
+    "createdAt": "2025-04-27T18:37:03.482Z",
+    "role": "user",
+    "content": "Hello\n",
+    "parts": [
+      {
+        "type": "text",
+        "text": "Hello\n"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "id": "msg-M02zxqWPFl4EWeqDZ9z09izT",
+    "createdAt": "2025-04-27T18:37:12.647Z",
+    "content": "Hello Bereket! I'm TaskAI, your personal task management assistant. How can I help you today?",
+    "toolInvocations": [],
+    "parts": [
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "Hello Bereket! I'm TaskAI, your personal task management assistant. How can I help you today?"
+      }
+    ]
+  }
+]
